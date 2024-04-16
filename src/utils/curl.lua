@@ -8,6 +8,11 @@ local M = {}
 
 function M.download(url, output_file)
   local f = io.open(output_file, "wb")
+
+  -- if f then
+  --   error("Error trying to open: " .. output_file)
+  -- end
+
   local dbar = bar.create(30)
 
   local function write_function(str)
