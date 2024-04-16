@@ -3,6 +3,5 @@
 /lua_modules
 /.luarocks
 luarocks
-pkger-dev-1.rockspec
 .luarc.json
 lua

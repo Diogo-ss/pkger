@@ -1,4 +1,5 @@
 local inspect = require("inspect")
+local which = require("which")
 
 local M = {}
 
@@ -21,8 +22,9 @@ function M.system(cmd)
 end
 
 function M.executable(command)
-	local code, _ = M.system({ command })
-	return code ~= 127 and code ~= -1
+	local path = which(command)
+
+	return path and true or false
 end
 
 function M.shell_code()
