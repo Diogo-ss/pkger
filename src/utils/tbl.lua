@@ -55,4 +55,22 @@ function M.deep_extend(...)
 	return merged_table
 end
 
+function M.diff(tbl1, tbl2)
+	local diff = {}
+
+	for key, value in pairs(tbl1) do
+		if not tbl2[key] then
+			diff[key] = value
+		end
+	end
+
+	for key, value in pairs(tbl2) do
+		if not tbl1[key] then
+			diff[key] = value
+		end
+	end
+
+	return diff
+end
+
 return M

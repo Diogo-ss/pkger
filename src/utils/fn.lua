@@ -60,4 +60,21 @@ function M.print(value)
 	print(M.inspect(value))
 end
 
+function M.json_path(data, path)
+	local keys = {}
+
+	for key in path:gmatch("[^%.]+") do
+		table.insert(keys, key)
+	end
+
+	for _, part in ipairs(keys) do
+		data = data[part]
+		if data == nil then
+			break
+		end
+	end
+
+	return type(data) == "string" and data or nil
+end
+
 return M
