@@ -69,7 +69,7 @@ function M.pkg(env)
 	valid(env.checkver.jsonpath, { "string" }, true)
 	valid(env.checkver.regex, { "string" })
 
-  -- TODO: add functions
+	-- TODO: add functions
 
 	if type(env.manteiners) == "table" then
 		env.manteiners = table.concat(env.manteiners, ", ")
