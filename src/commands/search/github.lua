@@ -1,4 +1,4 @@
-local curl = require("utils.curl")
+local curl = require "utils.curl"
 
 local M = {}
 

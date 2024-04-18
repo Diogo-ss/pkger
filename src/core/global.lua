@@ -1,4 +1,4 @@
-local HOME = os.getenv("HOME")
+local HOME = os.getenv "HOME"
 -- PKGER_BIN = PKGER_PREFIX .. "/bin"
 PKGER_PREFIX = HOME .. "/.local/pkger"
 PKGER_CACHE = PKGER_PREFIX .. "/cache"
