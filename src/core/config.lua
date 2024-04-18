@@ -1,5 +1,4 @@
 local fs = require("utils.fs")
-local sys = require("utils.sys")
 local tbl = require("utils.tbl")
 local sandbox = require("utils.sandbox")
 local filter = require("utils.filter")
@@ -15,43 +14,37 @@ M.opts = {
 	logfile = false,
 }
 
-function M.user_config()
+function M.read_user_config()
 	if not fs.is_file(PKGER_CONFIG_FILE) then
-		return true, {}
+		return {}
 	end
 
 	local ok, f = pcall(io.open, PKGER_CONFIG_FILE, "r")
 	if not (ok and f) then
-		return false, "Unable to read user config."
+		error("Unable to read user config.")
 	end
 
 	local text = f:read("*all")
 	f:close()
 
 	local sucess, config = pcall(sandbox.run, text)
-
 	if not sucess then
-		return false, "Error while trying to load user config - " .. config
+		error("Error while trying to load user config - " .. config)
 	end
 
 	local _ok, _config = pcall(filter.config, config)
-
 	if not _ok then
-		local msg = [[
-Check your config.
-Error while filtering user config.
-]]
-		return false, msg
+		error("Check your config.\nError while filtering user config.")
 	end
 
-	return true, _config
+	return _config
 end
 
 function M.init()
 	-- load global config
-	require("config.global")
+	require("core.global")
 
-	local ok, result = M.user_config()
+	local ok, result = pcall(M.read_user_config)
 
 	if ok then
 		M.set(result)
