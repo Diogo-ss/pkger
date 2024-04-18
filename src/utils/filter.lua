@@ -47,6 +47,7 @@ function M.pkg(env)
 
 	if string.match(env.url, "%.git$") then
 		valid(env.branch, { "string" }, true)
+		-- valid(env.commit, { "string" }, true)
 		if env.hash then
 			error("It is not allowed to define a hash in a Git repository URL.")
 		end
@@ -128,6 +129,7 @@ end
 
 function M.config(env)
 	valid(env.repos, { "table" }, true)
+	valid(env.colors, { "boolean" }, true)
 
 	if env.repos then
 		for _, repo in pairs(env.repos) do
@@ -137,6 +139,7 @@ function M.config(env)
 
 	return {
 		repos = env.repos,
+		colors = env.colors,
 	}
 end
 

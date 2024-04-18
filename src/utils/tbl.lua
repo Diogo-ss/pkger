@@ -73,4 +73,14 @@ function M.diff(tbl1, tbl2)
 	return diff
 end
 
+function M.contains(tbl, value)
+	for _, v in pairs(tbl) do
+		if v == value then
+			return true
+		end
+	end
+
+	return false
+end
+
 return M
