@@ -126,4 +126,18 @@ function M.lock(env)
 	return env
 end
 
+function M.config(env)
+	valid(env.repos, { "table" }, true)
+
+	if env.repos then
+		for _, repo in pairs(env.repos) do
+			valid(repo, { "string" })
+		end
+	end
+
+	return {
+		repos = env.repos,
+	}
+end
+
 return M
