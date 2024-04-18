@@ -8,7 +8,7 @@ local M = {}
 
 M.opts = {
 	repos = {
-		"https://github.com/pkger/core-pkgs",
+		"https://raw.githubusercontent.com/pkger/core-pkgs/main/repo.lua",
 	},
 	colors = true,
 	logfile = false,
