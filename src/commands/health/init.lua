@@ -22,4 +22,8 @@ function M.check()
   end
 end
 
+function M.parse(args)
+  M.check()
+end
+
 return M

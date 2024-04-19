@@ -19,7 +19,7 @@ function M.warn(text)
 end
 
 function M.info(text)
-  M._print(c.white "INFO: " .. text)
+  M._print(c.cyan "INFO: " .. text)
 end
 
 function M.debug(text)
