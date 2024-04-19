@@ -4,3 +4,6 @@
 /.luarocks
 luarocks
 lua
+src/init.luastatic.c
+src/pkger
+pkger
