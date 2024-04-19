@@ -4,32 +4,23 @@ local c = require "utils.colors"
 
 config.init()
 
-local args = { command = arg[1], args = { table.unpack(arg, 2) } }
+local args = { subcommand = arg[1], args = { table.unpack(arg, 2) } }
 
-if not args.command then
-  log.error "Use 'pkger --help' for usage information."
+if not args.subcommand then
+  log.error(("Use '%s' for usage information."):format(c.green "pkger --help"))
   return
 end
 
-if args.command == "--help" then
-  local msg = [[
-Usage: pkger <command> [arguments]
-
-Available commands:
-  pkger install <package> [...]    Install one or more packages
-  pkger remove <package> [...]     Remove one or more packages
-  pkger search <package>           Search for a package
-]]
-
-  log._print(msg)
+if args.subcommand == "--help" then
+  log._print "Fazer um texto de ajudar."
   return
 end
 
-local ok, cmd = pcall(require, "commands." .. args.command)
+local ok, cmd = pcall(require, "commands." .. args.subcommand)
 
 if ok then
   cmd.parse(args.args)
   return
 end
 
-log.warn "Invalid command. Use 'pkger --help' for usage information."
+log.warn(("Invalid subcommand. Use '%s' for usage information."):format(c.green "pkger --help"))

@@ -7,9 +7,6 @@ local log = require "utils.log"
 local M = {}
 
 M.opts = {
-  -- repos = {
-  --   "https://raw.githubusercontent.com/pkger/core-pkgs/main/repo.lua",
-  -- },
   colors = true,
   logfile = false,
 }
@@ -29,15 +26,10 @@ function M.read_user_config()
 
   local sucess, config = pcall(sandbox.run, text)
   if not sucess then
-    error("Error while trying to load user config - " .. config)
+    error("Error while trying to load user config: " .. config)
   end
 
-  local _ok, _config = pcall(filter.config, config)
-  if not _ok then
-    error "Check your config.\nError while filtering user config."
-  end
-
-  return _config
+  return config
 end
 
 function M.init()

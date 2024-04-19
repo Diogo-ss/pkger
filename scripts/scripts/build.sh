@@ -12,7 +12,7 @@ echo -n "Version: " && grep -o 'PKGER_VERSION = "[^"]*"' src/core/global.lua | c
 
 cd src
 
-luastatic init.lua $(find . -type f -name "*.lua") $(brew --prefix lua)/lib/liblua.a -I$(brew --prefix lua)/include/lua -o pkger
+luastatic main.lua $(find . -type f -name "*.lua") $(brew --prefix lua)/lib/liblua.a -I$(brew --prefix lua)/include/lua -o pkger
 
 rm init.luastatic.c
 mv pkger ../
