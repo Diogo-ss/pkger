@@ -1,5 +1,0 @@
-local fn = require "utils.fn"
-local config = require "core.config"
-local log = require "utils.log"
-local search = require "commands.search"
-local repo = require "core.repo"

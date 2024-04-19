@@ -4,6 +4,7 @@ local repo = require "core.repo"
 local tbl = require "utils.tbl"
 local list = require "utils.list"
 local c = require "utils.colors"
+local log = require "utils.log"
 
 local M = {}
 
@@ -51,6 +52,20 @@ function M.find(name)
   end
 
   show_results(results)
+end
+
+function M.parse(args)
+  if #args == 0 then
+    log.warn "You can only search for a single package."
+    return
+  end
+
+  if #args > 1 then
+    log.warn "You can only search for a single package."
+    return
+  end
+
+  M.find(args[1])
 end
 
 return M
