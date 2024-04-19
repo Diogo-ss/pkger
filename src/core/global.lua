@@ -1,4 +1,4 @@
-local HOME = os.getenv "HOME"
+local HOME = os.getenv("HOME")
 -- PKGER_BIN = PKGER_PREFIX .. "/bin"
 PKGER_PREFIX = HOME .. "/.local/pkger"
 PKGER_CACHE = PKGER_PREFIX .. "/cache"
@@ -7,5 +7,7 @@ PKGER_ETC = PKGER_PREFIX .. "/etc"
 -- PKGER_LIB = PKGER_PREFIX .. "/lib"
 -- PKGER_MODULES = PKGER_PREFIX .. "/modules"
 -- PKGER_REPOS = PKGER_PREFIX .. "/repos"
-PKGER_VERSION = "1.0"
+PKGER_VERSION = "0.1.0"
 PKGER_CONFIG_FILE = HOME .. "/.config/pkger/config.lua"
+PKGER_REPOS_FILE = HOME .. "/.config/pkger/repos"
+PKGER_USER_AGENT = "PKGER/" .. PKGER_VERSION

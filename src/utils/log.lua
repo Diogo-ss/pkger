@@ -1,4 +1,4 @@
-local c = require "utils.colors"
+local c = require("utils.colors")
 
 local M = {}
 
@@ -7,23 +7,23 @@ local M = {}
 -- end
 
 local function _print(text)
-  print(text)
+	print(text)
 end
 
 function M.error(text)
-  _print(c.red "ERROR: " .. text)
+	_print(c.red("ERROR: ") .. text)
 end
 
 function M.warn(text)
-  _print(c.yellow "WARN: " .. text)
+	_print(c.yellow("WARN: ") .. text)
 end
 
 function M.info(text)
-  _print(c.white "INFO: " .. text)
+	_print(c.white("INFO: ") .. text)
 end
 
 function M.debug(text)
-  _print(c.green "DEBUG: " .. text)
+	_print(c.green("DEBUG: ") .. text)
 end
 
 return M
