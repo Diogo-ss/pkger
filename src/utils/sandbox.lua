@@ -1,47 +1,24 @@
 local tbl = require "utils.tbl"
+local fn = require "utils.fn"
+local curl = require "utils.curl"
+local fs = require "utils.fs"
+local log = require "utils.log"
 
 local M = {}
 
 local function env()
   return {
-    print = print,
-    -- tar = fs.tar,
-    -- unzip = fs.unzip,
-    -- next = next,
-    -- pairs = pairs,
-    -- pcall = pcall,
-    -- select = select,
-    -- tonumber = tonumber,
-    -- tostring = tostring,
-    -- type = type,
-    -- _VERSION = _VERSION,
-    -- xpcall = xpcall,
-    -- string = {
-    --   byte = string.byte,
-    --   char = string.char,
-    --   find = string.find,
-    --   format = string.format,
-    --   gmatch = string.gmatch,
-    --   gsub = string.gsub,
-    --   len = string.len,
-    --   lower = string.lower,
-    --   match = string.match,
-    --   rep = string.rep,
-    --   reverse = string.reverse,
-    --   sub = string.sub,
-    --   upper = string.upper,
-    -- },
-    -- table = {
-    --   insert = table.insert,
-    --   remove = table.remove,
-    --   sort = table.sort,
-    --   keys = tbl.keys,
-    --   extend = tbl.extend,
-    --   isempty = tbl.isempty,
-    --   deep_extend = tbl.deep_extend,
-    --   map = tbl.map,
-    -- },
-    -- os = { clock = os.clock, difftime = os.difftime, time = os.time },
+    system = fn.system,
+    shell_code = fn.shell_code,
+    get = curl.get,
+    rm = fs.rm,
+    rm_dir = fs.rm_dir,
+    cp = fs.cp,
+    cd = fs.cd,
+    cwd = fs.cwd,
+    extract = fs.extract,
+    print = log,
+    log = log,
   }
 end
 
@@ -62,7 +39,8 @@ local function run_sandbox(code, _env)
 end
 
 M.run = function(code, _env)
-  return pcall(run_sandbox, code, tbl.deep_extend(env(), _env or {}))
+  _env = tbl.deep_extend(env(), _env or {})
+  return pcall(run_sandbox, code, _env)
 end
 
 return M

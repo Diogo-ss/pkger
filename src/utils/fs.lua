@@ -49,7 +49,7 @@ end
 function M.extract(file, format)
   local extract_commands = {
     ["7z"] = { "7z x %s" },
-    tar = { "tar -xf %s -C ." },
+    tar = { "tar -xf %s" },
     zip = { "unzip %s" },
     rar = { "unrar x %s" },
     gz = { "tar -xzf %s" },
@@ -57,22 +57,21 @@ function M.extract(file, format)
     xz = { "tar -xf %s", "xz -d %s" },
   }
 
-  format = file:match "%.([^.]+)$" or format
+  format = format or file:match "%.([^.]+)$"
 
   local cmds = extract_commands[format]
   if not (cmds and format) then
-    error "Unsupported file format."
+    return false, "Unsupported file format."
   end
 
   for _, cmd in ipairs(cmds) do
-    print(cmd .. " " .. file)
     local exit_code = fn.system((cmd):format(file))
     if exit_code == 0 then
-      return true
+      return true, "Done."
     end
   end
 
-  error "Error extracting the file."
+  return false, "Error extracting the file."
 end
 
 M.cwd = path.currentdir

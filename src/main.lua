@@ -12,17 +12,17 @@ if not args.command then
 end
 
 if args.command == "--help" then
-  log._print "Fazer um texto de ajudar."
+  log "Fazer um texto de ajudar."
   return
 end
 
-require "commands.test"
+-- require "commands.test"
 
--- local ok, cmd = pcall(require, "commands." .. args.command)
+local ok, cmd = pcall(require, "commands." .. args.command)
 
--- if ok then
---   cmd.parse(args.args)
---   return
--- end
+if ok and type(cmd) == "table" and type(cmd.parse) == "function" then
+  cmd.parse(args.args)
+  return
+end
 
 log.warn(("Invalid subcommand. Use '%s' for usage information."):format(c.green "pkger --help"))

@@ -1,4 +1,5 @@
 local c = require "utils.colors"
+local fs = require "utils.fs"
 
 local M = {}
 
@@ -6,24 +7,30 @@ local M = {}
 -- local function save(text)
 -- end
 
-function M._print(text)
+local function _print(text)
   print(text)
 end
 
 function M.error(text)
-  M._print(c.red "ERROR: " .. text)
+  _print(c.red "ERROR: " .. text)
 end
 
 function M.warn(text)
-  M._print(c.yellow "WARN: " .. text)
+  _print(c.yellow "WARN: " .. text)
 end
 
 function M.info(text)
-  M._print(c.cyan "INFO: " .. text)
+  _print(c.cyan "INFO: " .. text)
 end
 
 function M.debug(text)
-  M._print(c.green "DEBUG: " .. text)
+  _print(c.green "DEBUG: " .. text)
 end
+
+setmetatable(M, {
+  __call = function(_, text)
+    _print(text)
+  end,
+})
 
 return M

@@ -11,3 +11,4 @@ PKGER_VERSION = "0.1.0"
 PKGER_CONFIG_FILE = HOME .. "/.config/pkger/config.lua"
 PKGER_REPOS_FILE = HOME .. "/.config/pkger/repos"
 PKGER_USER_AGENT = "PKGER/" .. PKGER_VERSION
+-- PKGER_INSTANCE =

@@ -1,7 +1,27 @@
-local fs = require "utils.fs"
+local log = require "utils.log"
 
-print()
+-- local sandbox = require "utils.sandbox"
+-- local fn = require "utils.fn"
 
-print(fs.cd(fs.cwd() .. "/test"))
+-- local code = [[
 
-print(fs.extract "nvim-linux64.tar.gz")
+-- function install()
+--   print(ola)
+-- end
+-- ]]
+
+-- local env = {
+--   ola = "ooooo"
+-- }
+
+-- local ok, _env = sandbox.run(code, env)
+
+-- fn.print(_env.install())
+
+local M = {}
+
+function M.parse(...)
+  print "lll"
+end
+
+return M
