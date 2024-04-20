@@ -1,5 +1,6 @@
 local inspect = require "inspect"
 local which = require "which"
+local sha1 = require "sha1"
 
 local M = {}
 
@@ -31,19 +32,6 @@ function M.shell_code()
   return shell_code
 end
 
-function M.read_file(path, mode)
-  local f = assert(io.open(path, mode or "r"))
-  local c = f:read "*a"
-  f:close()
-  return c
-end
-
-function M.write_file(path, contents, mode)
-  local f = assert(io.open(path, mode or "w+"))
-  f:write(contents)
-  f:close()
-end
-
 function M.is_empty(value)
   return not (value ~= "" and value ~= nil)
 end
@@ -57,7 +45,11 @@ function M.inspect(value)
 end
 
 function M.print(value)
-  print(M.inspect(value))
+  if type(value) == "table" then
+    print(M.inspect(value))
+    return
+  end
+  print(value)
 end
 
 function M.json_path(data, path)
@@ -93,6 +85,18 @@ end
 
 function M.endwith(str, s)
   return str.match(str, s .. "$") ~= nil
+end
+
+function M.sha1_file(path)
+  local ok, f = pcall(io.open, path, "rb")
+
+  if ok and f then
+    local data = f:read "*a"
+    f:close()
+    return sha1.sha1(data)
+  end
+
+  return nil
 end
 
 return M

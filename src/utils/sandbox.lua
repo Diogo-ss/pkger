@@ -1,27 +1,15 @@
 local tbl = require "utils.tbl"
-local fn = require "utils.fn"
-local curl = require "utils.curl"
-local fs = require "utils.fs"
 
 local M = {}
 
 local function env()
   return {
-    system = fn.system,
-    shell_code = fn.shell_code,
-    get = curl.get,
-    download = curl.download,
-    rm = fs.rm,
-    rm_dir = fs.rm_dir,
-    cp = fs.cp,
-    cd = fs.cd,
-    cwd = fs.cwd,
+    print = print,
     -- tar = fs.tar,
     -- unzip = fs.unzip,
     -- next = next,
     -- pairs = pairs,
     -- pcall = pcall,
-    -- print = print,
     -- select = select,
     -- tonumber = tonumber,
     -- tostring = tostring,
@@ -74,7 +62,7 @@ local function run_sandbox(code, _env)
 end
 
 M.run = function(code, _env)
-  return run_sandbox(code, tbl.deep_extend(env(), _env or {}))
+  return pcall(run_sandbox, code, tbl.deep_extend(env(), _env or {}))
 end
 
 return M

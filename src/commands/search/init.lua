@@ -1,6 +1,6 @@
 local sandbox = require "utils.sandbox"
 local fn = require "utils.fn"
-local repo = require "core.repo"
+local repo = require "utils.repo"
 local tbl = require "utils.tbl"
 local list = require "utils.list"
 local c = require "utils.colors"
@@ -13,7 +13,6 @@ local function show_results(results)
     print(c.yellow(ru))
     for name, versions in pairs(value.pkgs) do
       local version_str = table.concat(versions, ", ")
-      version_str = version_str == "script" and c.red "script" or version_str
       print(string.format("  %s: %s", c.green(name), version_str))
     end
     print()
@@ -42,14 +41,16 @@ function M.find(name)
     -- TODO: filter
 
     if contents then
-      local ok, env = pcall(sandbox.run, contents)
+      local ok, env = sandbox.run(contents)
 
-      if ok and env.search then
+      if ok and env and env.search then
         results = tbl.extend(results, _search(env, name))
         -- table.insert(results, _search(env, name))
       end
     end
   end
+
+  -- fn.print(results)
 
   show_results(results)
 end

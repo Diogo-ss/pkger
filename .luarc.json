@@ -1,5 +1,7 @@
 {
     "diagnostics.globals": [
-        "jit"
+        "jit",
+        "INSTALLATION_ENVIRONMENT",
+        "INSTALLATION_DIRECTORY"
     ]
 }

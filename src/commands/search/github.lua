@@ -2,6 +2,7 @@ local curl = require "utils.curl"
 local json = require "dkjson"
 local fn = require "utils.fn"
 local list = require "utils.list"
+local c = require "utils.colors"
 
 local M = {}
 
@@ -13,7 +14,7 @@ local function search_packages(tree, name)
 
     if not pkg then
       pkg = string.match(file.path, "pkgs/([^/]+)/script.lua")
-      version = "script"
+      version = c.red "script"
     end
 
     if pkg and version and fn.startswith(pkg, name) then
@@ -26,7 +27,8 @@ end
 
 function M.search(url, name)
   local ok, response = pcall(curl.get, url)
-  local repo = string.match(url, "/repos/(.+)/git") or "notfound"
+  local info = string.match(url, "/repos/(.+)/git")
+  local repo = info and "GitHub: " .. info or "not found"
   local result = {}
 
   if ok then

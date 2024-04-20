@@ -1,7 +1,6 @@
 local fs = require "utils.fs"
 local tbl = require "utils.tbl"
 local sandbox = require "utils.sandbox"
-local filter = require "utils.filter"
 local log = require "utils.log"
 
 local M = {}
@@ -24,7 +23,7 @@ function M.read_user_config()
   local text = f:read "*all"
   f:close()
 
-  local sucess, config = pcall(sandbox.run, text)
+  local sucess, config = sandbox.run(text)
   if not sucess then
     error("Error while trying to load user config: " .. config)
   end

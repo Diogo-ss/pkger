@@ -10,6 +10,26 @@ local programs = {
     type = "error",
     text = "git was not found. It is an essential component. Use `pkger install git` to install it.",
   },
+  {
+    cmd = "tar",
+    type = "error",
+    text = "tar was not found. It is required for extraction. Install tar to continue.",
+  },
+  {
+    cmd = "7z",
+    type = "error",
+    text = "7z was not found. It is required for extraction. Install 7z to continue.",
+  },
+  {
+    cmd = "unzip",
+    type = "error",
+    text = "unzip was not found. It is required for extraction. Install unzip to continue.",
+  },
+  {
+    cmd = "rar",
+    type = "error",
+    text = "rar was not found. It is required for extraction. Install rar to continue.",
+  },
 }
 
 function M.check()
