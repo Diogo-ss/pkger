@@ -1,6 +1,6 @@
 local sandbox = require "utils.sandbox"
 local fn = require "utils.fn"
-local repo = require "utils.repo"
+local repo = require "core.repo"
 local tbl = require "utils.tbl"
 local list = require "utils.list"
 local c = require "utils.colors"

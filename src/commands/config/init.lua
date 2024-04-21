@@ -1,9 +1,28 @@
 local fn = require "utils.fn"
-local tbl = require "utils.tbl"
 local log = require "utils.log"
 local c = require "utils.colors"
 
 local M = {}
+
+function parse_opts(args)
+  local pkgs = {}
+  local opts = {}
+
+  for i, value in ipairs(args) do
+    if fn.startswith(value, "--") then
+      local option, arg_value = value:match "^%-%-(%w+)%=(.+)"
+      if option then
+        opts[option] = tonumber(arg_value) or arg_value
+      else
+        opts[value:sub(3)] = true
+      end
+    else
+      table.insert(pkgs, value)
+    end
+  end
+
+  return { pkgs = pkgs, opts = opts }
+end
 
 function M.parse(args)
   for key, value in pairs(_G) do

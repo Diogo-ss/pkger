@@ -1,5 +1,6 @@
 local path = require "path"
 local fn = require "utils.fn"
+local lfs = require "lfs"
 -- local lpath = require "lpath"
 
 local M = {}
@@ -107,5 +108,9 @@ M.size = path.size
 M.SEP = path.DIR_SEP
 
 M.each = path.each
+
+M.lock_dir = lfs.lock_dir
+
+M.link = lfs.link
 
 return M

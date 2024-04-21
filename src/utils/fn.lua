@@ -80,11 +80,17 @@ function M.split(str, sep)
 end
 
 function M.startswith(str, s)
-  return str:find("^" .. s) ~= nil
+  return str:sub(1, #s) == s
 end
 
-function M.endwith(str, s)
-  return str.match(str, s .. "$") ~= nil
+function M.endswith(str, s)
+  return str:sub(-#s) == s
+end
+
+function M.sleep(sec)
+  local t = os.clock() + sec
+  while os.clock() < t do
+  end
 end
 
 function M.sha1_file(path)

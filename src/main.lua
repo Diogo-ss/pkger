@@ -16,10 +16,7 @@ if args.command == "--help" then
   return
 end
 
--- require "commands.test"
-
 local ok, cmd = pcall(require, "commands." .. args.command)
-
 if ok and type(cmd) == "table" and type(cmd.parse) == "function" then
   cmd.parse(args.args)
   return

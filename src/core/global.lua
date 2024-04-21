@@ -9,6 +9,7 @@ PKGER_ETC = PKGER_PREFIX .. "/etc"
 PKGER_LIB = PKGER_PREFIX .. "/lib"
 PKGER_DATA = PKGER_PREFIX .. "/data"
 PKGER_CACHE = HOME .. "/.cache/pkger"
+PKGER_LOCKED = PKGER_PREFIX .. "/lock"
 PKGER_CONFIG = HOME .. "/.config/pkger"
 PKGER_TMP_DIR = PKGER_PREFIX .. "/tmp"
 PKGER_USER_AGENT = ("PKGER/%s (%s; %s %s)"):format(PKGER_VERSION, _VERSION, sys.os, sys.arch)

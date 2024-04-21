@@ -8,6 +8,10 @@ local M = {}
 M.opts = {
   colors = true,
   logfile = false,
+  cache = {
+    enabled = true,
+    limit = 3600,
+  },
 }
 
 function M.read_user_config()

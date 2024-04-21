@@ -50,7 +50,7 @@ function M.download(url, output_file)
   f:close()
   easy:close()
 
-  return true
+  return output_file
 end
 
 function M.get(url)
@@ -77,6 +77,16 @@ function M.get(url)
   easy:close()
 
   return table.concat(data)
+end
+
+function M.get_file(url)
+  local ok, result = pcall(M.get, url)
+
+  if ok then
+    return result
+  end
+
+  return nil
 end
 
 return M
