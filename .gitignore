@@ -7,3 +7,4 @@ lua
 src/init.luastatic.c
 src/pkger
 pkger
+main.luastatic.c

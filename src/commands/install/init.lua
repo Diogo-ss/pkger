@@ -136,7 +136,7 @@ function M.install(name, version, is_dependency)
     "pre_install",
     "install",
     "pos_install",
-    "clean"
+    "clean",
   }
 
   --TODO: add check type
@@ -175,7 +175,7 @@ function M.install(name, version, is_dependency)
   local ok, _ = pcall(_env.test)
 
   if not ok then
-    log.error("O teste apresentou falha na instlação. Deseja remover o binário?")
+    log.error "O teste apresentou falha na instlação. Deseja remover o binário?"
   end
 
   -- TODO: perguntar
