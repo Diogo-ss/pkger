@@ -5,7 +5,7 @@ local fs = require "utils.fs"
 local log = require "utils.log"
 local repo = require "core.repo"
 local sandbox = require "utils.sandbox"
-local pkg = require "core.pkg"
+local lpkg = require "core.pkg"
 -- local config = require "core.config"
 -- local lcache = require "commands.install.cache"
 
@@ -74,15 +74,15 @@ function M.install(name, version, is_dependency)
   local infos = { name = name, version = version }
 
   log.info "Obtendo arquvios de instalação."
-  local _pkg = pkg.get_pkg(cache.repos, infos)
+  local _pkg = lpkg.get_pkg(cache.repos, infos)
 
   if not _pkg then
     lerror("Não foi possível obter o aquivo de instalação para: " .. name .. " " .. version)
   end
 
   log.info "Gerando env da instalação."
-  local _env = pkg.load_pkg(_pkg, env())
-  local dir = fs.join(PKGER_CACHE, _env.name, _env.version)
+  local _env = lpkg.load_pkg(_pkg, env())
+  local dir = fs.join(PKGER_DATA, _env.name, _env.version)
 
   -- if _env.depends then
   --   local depends = M.pkgs_parse(_env.depends)
@@ -107,13 +107,12 @@ function M.install(name, version, is_dependency)
   fs.cd(dir)
   _env.INSTALLATION_DIRECTORY = dir
 
-  fs.lock_dir(dir)
+  -- fs.lock_dir(dir)
 
   local file = _env.url:gsub("/$", ""):match ".*/(.*)$"
 
   log.info(("Baixando %s de %s"):format(file, _env.url))
-  -- local ok, _ = pcall(curl.download, _env.url, file)
-  local ok = true
+  local ok, _ = pcall(curl.download, _env.url, file)
 
   if not ok then
     lerror("Não foi possível baixar o arquivo:\n" .. _env.url, dir)
@@ -128,7 +127,7 @@ function M.install(name, version, is_dependency)
   end
 
   fs.extract(file)
-  -- fs.rm(file)
+  fs.rm(file)
 
   local order = {
     "pre_biuld",
@@ -137,8 +136,7 @@ function M.install(name, version, is_dependency)
     "pre_install",
     "install",
     "pos_install",
-    "clean",
-    "test",
+    "clean"
   }
 
   --TODO: add check type
@@ -173,6 +171,14 @@ function M.install(name, version, is_dependency)
   log.info(
     ("Link simbólico criado com sucesso para o binário %s na versão %s. Use: %s"):format(name, version, bin_name)
   )
+
+  local ok, _ = pcall(_env.test)
+
+  if not ok then
+    log.error("O teste apresentou falha na instlação. Deseja remover o binário?")
+  end
+
+  -- TODO: perguntar
 
   -- TODO: check lockfile
 end
