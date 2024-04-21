@@ -105,4 +105,16 @@ function M.sha1_file(path)
   return nil
 end
 
+function M.sha1sum(path)
+  local comando = "sha1sum " .. path
+  local codigo_saida, saida = M.system(comando)
+
+  if codigo_saida == 0 and saida then
+    local hash = saida:match "(%w+)"
+    return hash
+  else
+    return nil
+  end
+end
+
 return M

@@ -59,13 +59,15 @@ function M.get_pkg(repos, pkg)
   return curl.get_file(repo.url)
 
   --- remover
-  -- local text = [[
+  --   local text = [[
   -- name = "neovim"
+  -- version = "0.9.5"
   -- description = "Vim-fork focused on extensibility and usability"
   -- homepage = "https://neovim.io"
   -- license = "Apache-2.0"
   -- manteiners = "Diogo-ss"
   -- url = "https://github.com/neovim/neovim/releases/download/v${{ version }}/nvim-linux64.tar.gz"
+  -- hash = "c3d7cfd161ccfca866fb690d53c5f0ab0df67934"
 
   -- bin = "nvim-linux64/bin/nvim"
 
@@ -75,14 +77,22 @@ function M.get_pkg(repos, pkg)
   --   regex = "[Vv]?(.+)",
   -- }
 
+  -- depends = {
+  --   'libluv',
+  --   'libtermkey',
+  --   'libuv'
+  -- }
+
   -- function install()
-  --   tar "nvim-linux64.tar.gz"
+  --   -- extract "nvim-linux64.tar.gz"
+  --   print("install")
   -- end
 
   -- function test()
-  --   system { "nvim", "--version" }
+  --   -- extract { "nvim", "--version" }
+  --   print("test")
   -- end
-  -- ]]
+  --   ]]
 
   -- return text
 end

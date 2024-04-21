@@ -84,6 +84,19 @@ function M.install(name, version, is_dependency)
   local _env = pkg.load_pkg(_pkg, env())
   local dir = fs.join(PKGER_CACHE, _env.name, _env.version)
 
+  -- if _env.depends then
+  --   local depends = M.pkgs_parse(_env.depends)
+  --   for dname, dversion in pairs(depends) do
+  --     print(("name %s version %s dname %s dversion %s"):format(name, version, dname, dversion))
+  --     local ok, _ = pcall(M.install, dname, dversion, true)
+
+  --     if not ok then
+  --       error"erro na porra da depends"
+  --     end
+
+  --   end
+  -- end
+
   if not fs.is_dir(dir) then
     local ok = fs.mkdir(dir)
     if not ok then
@@ -96,6 +109,27 @@ function M.install(name, version, is_dependency)
 
   fs.lock_dir(dir)
 
+  local file = _env.url:gsub("/$", ""):match ".*/(.*)$"
+
+  log.info(("Baixando %s de %s"):format(file, _env.url))
+  -- local ok, _ = pcall(curl.download, _env.url, file)
+  local ok = true
+
+  if not ok then
+    lerror("Não foi possível baixar o arquivo:\n" .. _env.url, dir)
+  end
+
+  if version ~= "script" and version ~= "head" then
+    log.info "Inciando chacagem sha1..."
+    local sha1 = fn.sha1sum(file)
+    if sha1 ~= _env.hash then
+      lerror("Os sha1 não são iguais. Abortando instalação do " .. name, dir)
+    end
+  end
+
+  fs.extract(file)
+  -- fs.rm(file)
+
   local order = {
     "pre_biuld",
     "biuld",
@@ -107,38 +141,44 @@ function M.install(name, version, is_dependency)
     "test",
   }
 
-  local file = _env.url:gsub("/$", ""):match ".*/(.*)$"
-
-  log.info(("Baixando %s de %s"):format(file, _env.url))
-  local ok, _ = pcall(curl.download, _env.url, file)
-
-  if not ok then
-    lerror("Não foi possível baixar o arquivo:\n" .. _env.url, dir)
-  end
-
-  if version ~= "script" and version ~= "head" then
-    log.info "Inciando chacagem sha1..."
-    if fn.sha1_file(dir .. "/" .. file) ~= _env.sh then
-      lerror("Os sha1 não são iguais. Abortando instalação do " .. name, dir)
-    end
-  end
-
-  fs.extract(file)
-  fs.rm(file)
-
   --TODO: add check type
   for _, n in pairs(order) do
     local func = _env[n]
-    if func and type(func) ~= "function" then
-      log.error(n .. "não é uma função. Cheque o script.")
-      error()
+
+    if func then
+      if type(func) ~= "function" then
+        lerror(n .. " não é uma função. Cheque o script.")
+      end
+
+      local ok, _ = pcall(func)
+
+      if not ok then
+        lerror(n .. " não pode ser executada.")
+      end
     end
   end
+
+  if not fs.is_dir(PKGER_BIN) and fs.mkdir(PKGER_BIN) then
+    lerror "Não foi possível obter o diretório do /bin"
+  end
+
+  local bin_name = _env.bin:match ".+/([^/]+)$" or _env.bin
+  local cmd = 'ln -s "' .. dir .. "/" .. _env.bin .. '" "' .. PKGER_BIN .. "/" .. bin_name .. '"'
+
+  local exit_code, _ = fn.system(cmd)
+  if exit_code ~= 0 then
+    lerror("Erro ao criar o link simbólico para o binário: " .. _env.bin)
+  end
+
+  log.info(
+    ("Link simbólico criado com sucesso para o binário %s na versão %s. Use: %s"):format(name, version, bin_name)
+  )
 
   -- TODO: check lockfile
 end
 
 function M.install_pkgs(pkgs)
+  log.info "Carregando repositórios..."
   cache.repos = cache.repos or repo.load_all()
   local current_dir = fs.cwd()
 
@@ -160,7 +200,7 @@ function M.install_pkgs(pkgs)
 end
 
 function M.parse(args)
-  fn.print(require "lfs")
+  -- fn.print(require "lfs")
 
   local pkgs = M.pkgs_parse(args)
 
