@@ -1,5 +1,5 @@
 local HOME = os.getenv "HOME"
-local sys = require "utils.sys"
+local sys = require "src.utils.sys"
 
 PKGER_PREFIX = HOME .. "/.local/pkger"
 PKGER_VERSION = "0.1.0"

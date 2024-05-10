@@ -1,6 +1,6 @@
-local fn = require "utils.fn"
-local log = require "utils.log"
-local c = require "utils.colors"
+local fn = require "src.utils.fn"
+local log = require "src.utils.log"
+local c = require "src.utils.colors"
 
 local M = {}
 
@@ -42,7 +42,7 @@ function M.check()
   end
 end
 
-function M.parse(args)
+function M.parser(args)
   M.check()
 end
 

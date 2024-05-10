@@ -1,6 +1,6 @@
-local log = require "utils.log"
-local tbl = require "utils.tbl"
-local fn = require "utils.fn"
+local log = require "src.utils.log"
+local tbl = require "src.utils.tbl"
+local fn = require "src.utils.fn"
 -- local curl = require "utils.curl"
 -- local fs = require "utils.fs"
 

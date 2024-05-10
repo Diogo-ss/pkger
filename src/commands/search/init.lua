@@ -1,72 +1,77 @@
-local sandbox = require "utils.sandbox"
-local fn = require "utils.fn"
-local repo = require "core.repo"
-local tbl = require "utils.tbl"
-local list = require "utils.list"
-local c = require "utils.colors"
-local log = require "utils.log"
+local repo = require "src.core.repo"
+local tbl = require "src.utils.tbl"
+local c = require "src.utils.colors"
+local log = require "src.utils.log"
 
 local M = {}
 
-local function show_results(results)
-  for ru, value in pairs(results) do
-    print(c.yellow(ru))
+function M.show(results)
+  for _, value in pairs(results) do
+    log(c.cyan(value.engine) .. ": " .. c.yellow(value.repo))
     for name, versions in pairs(value.pkgs) do
-      local version_str = table.concat(versions, ", ")
-      print(string.format("  %s: %s", c.green(name), version_str))
+      local versions_str = table.concat(versions, ", ")
+      log(string.format("  %s: %s", c.green(name), versions_str))
     end
-    print()
   end
 end
 
-local function _search(env, name)
-  local url = env.search.url:gsub("%${{ pkg%.name }}", name)
+local function search(url, engine_type, name)
+  url = url:gsub("%${{ pkg%.name }}", name)
+  local ok, engine = pcall(require, "src.commands.search." .. engine_type:lower())
 
-  local ok, engine = pcall(require, "commands.search." .. env.search.type:lower())
-
-  if ok then
-    return engine.search(url, name)
-  end
-
-  return nil
+  return ok and engine.search(url, name) or nil
 end
 
+--[[
+return a table
+{
+repo: string
+engine: string
+pkgs: {
+  name: { "v1", "v2" }
+  name2: { "v1", "v2" }
+}
+}
+--]]
 function M.find(name)
-  local rl = repo.get_repos()
   local results = {}
 
-  for _, link in pairs(rl) do
-    local contents = repo.get_file(link)
+  local repos = tbl.map(repo.load_all(), function(val)
+    if val.search and val.search.url and val.search.type then
+      return val.search
+    end
+  end)
 
-    -- TODO: filter
+  if tbl.isempty(repos) then
+    log.error "No repository with search support was found."
+    os.exit(1)
+  end
 
-    if contents then
-      local ok, env = sandbox.run(contents)
+  for _, repo_search in pairs(repos) do
+    local result = search(repo_search.url, repo_search.type, name)
 
-      if ok and env and env.search then
-        results = tbl.extend(results, _search(env, name))
-        -- table.insert(results, _search(env, name))
-      end
+    if results then
+      table.insert(results, result)
     end
   end
 
-  -- fn.print(results)
-
-  show_results(results)
+  return results
 end
 
-function M.parse(args)
-  if #args == 0 then
-    log.warn "You can only search for a single package."
+function M.parser(args)
+  if #args ~= 1 then
+    log.warn "Search for a single package."
     return
   end
 
-  if #args > 1 then
-    log.warn "You can only search for a single package."
-    return
+  local results = M.find(args[1])
+
+  if tbl.isempty(results) then
+    log.warn("No packages found for: " .. args[1])
+    os.exit(1)
   end
 
-  M.find(args[1])
+  M.show(results)
 end
 
 return M

@@ -1,4 +1,4 @@
-local tbl = require "utils.tbl"
+local tbl = require "src.utils.tbl"
 
 local M = {}
 

@@ -1,23 +1,20 @@
-local curl = require "utils.curl"
+local curl = require "src.utils.curl"
 local json = require "dkjson"
-local fn = require "utils.fn"
-local list = require "utils.list"
-local c = require "utils.colors"
+local fn = require "src.utils.fn"
+local list = require "src.utils.list"
+local c = require "src.utils.colors"
+local log = require "src.utils.log"
+local tbl = require "src.utils.tbl"
 
 local M = {}
 
-local function search_packages(tree, name)
+local function filter(tree, name)
   local packages = {}
 
   for _, file in pairs(tree) do
     local pkg, version = string.match(file.path, "pkgs/([^/]+)/([^/]+)/pkg.lua")
 
-    if not pkg then
-      pkg = string.match(file.path, "pkgs/([^/]+)/script.lua")
-      version = c.red "script"
-    end
-
-    if pkg and version and fn.startswith(pkg, name) then
+    if pkg and version and string.find(pkg, name) then
       packages[pkg] = list.extend(packages[pkg] or {}, { version })
     end
   end
@@ -26,17 +23,23 @@ local function search_packages(tree, name)
 end
 
 function M.search(url, name)
-  local ok, response = pcall(curl.get, url)
+  local response = curl.get_content(url)
   local info = string.match(url, "/repos/(.+)/git")
-  local repo = info and "GitHub: " .. info or "not found"
-  local result = {}
+  local repo = info or "not found"
 
-  if ok then
-    local files = json.decode(response)
-    result[repo] = { pkgs = search_packages(files.tree, name) }
+  if not response then
+    log.error("Could not access: " .. url)
+    return nil
   end
 
-  return result
+  local files = json.decode(response)
+  local pkgs = filter(files.tree, name)
+
+  if tbl.isempty(pkgs) then
+    return nil
+  end
+
+  return { repo = repo, pkgs = pkgs, engine = "GitHub" }
 end
 
 return M

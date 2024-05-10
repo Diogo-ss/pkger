@@ -1,5 +1,5 @@
 local curl = require "lcurl"
-local bar = require "utils.bar"
+local bar = require "src.utils.bar"
 
 local M = {}
 
@@ -59,7 +59,7 @@ function M.get(url)
   local easy = curl.easy {
     url = url,
     httpheader = {
-      "User-Agent: test PKGER/" .. PKGER_VERSION,
+      "User-Agent:" .. PKGER_USER_AGENT,
     },
     writefunction = function(str)
       table.insert(data, str)
@@ -79,7 +79,7 @@ function M.get(url)
   return table.concat(data)
 end
 
-function M.get_file(url)
+function M.get_content(url)
   local ok, result = pcall(M.get, url)
 
   if ok then

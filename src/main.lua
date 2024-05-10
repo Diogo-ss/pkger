@@ -1,6 +1,7 @@
-local config = require "core.config"
-local log = require "utils.log"
-local c = require "utils.colors"
+local config = require "src.core.config"
+local log = require "src.utils.log"
+local c = require "src.utils.colors"
+local fn = require "src.utils.fn"
 
 config.init()
 
@@ -16,9 +17,10 @@ if args.command == "--help" then
   return
 end
 
-local ok, cmd = pcall(require, "commands." .. args.command)
-if ok and type(cmd) == "table" and type(cmd.parse) == "function" then
-  cmd.parse(args.args)
+local ok, cmd = pcall(require, "src.commands." .. args.command)
+
+if ok and type(cmd) == "table" and type(cmd.parser) == "function" then
+  cmd.parser(args.args)
   return
 end
 

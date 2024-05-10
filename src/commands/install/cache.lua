@@ -1,8 +1,8 @@
-local fn = require "utils.fn"
-local fs = require "utils.fs"
-local tbl = require "utils.tbl"
-local log = require "utils.log"
-local config = require "core.config"
+local fn = require "src.utils.fn"
+local fs = require "src.utils.fs"
+local tbl = require "src.utils.tbl"
+local log = require "src.utils.log"
+local config = require "src.core.config"
 
 local M = {}
 

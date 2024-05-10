@@ -1,8 +1,8 @@
-local curl = require "utils.curl"
-local fn = require "utils.fn"
-local tbl = require "utils.tbl"
-local sandbox = require "utils.sandbox"
-local log = require "utils.log"
+local curl = require "src.utils.curl"
+local fn = require "src.utils.fn"
+local tbl = require "src.utils.tbl"
+local sandbox = require "src.utils.sandbox"
+local log = require "src.utils.log"
 local json = require "dkjson"
 
 local M = {}
@@ -19,7 +19,7 @@ function M.checkver(url, jsonpath, regex)
   -- return "0.9.5"
 
   --- remover
-  local contents = curl.get_file(url)
+  local contents = curl.get_content(url)
 
   if not contents then
     return nil
@@ -56,7 +56,7 @@ function M.get_pkg(repos, pkg)
 
   repo.url = replace(repo.url, pkg)
 
-  return curl.get_file(repo.url)
+  return curl.get_content(repo.url)
 
   --- remover
   --   local text = [[

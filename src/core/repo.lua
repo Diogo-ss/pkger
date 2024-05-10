@@ -1,8 +1,9 @@
-local curl = require "utils.curl"
-local fn = require "utils.fn"
-local tbl = require "utils.tbl"
-local sandbox = require "utils.sandbox"
-local log = require "utils.log"
+local curl = require "src.utils.curl"
+local fn = require "src.utils.fn"
+local tbl = require "src.utils.tbl"
+local sandbox = require "src.utils.sandbox"
+local log = require "src.utils.log"
+local list = require "src.utils.list"
 
 local default = {
   "https://raw.githubusercontent.com/pkger/core-pkgs/main/repo.lua",
@@ -21,43 +22,60 @@ function M.get_repos()
       return not fn.startswith(str, "#") and str or nil
     end)
     f:close()
+
+    respos = list.unique(respos)
   end
 
   return tbl.isempty(respos) and default or respos
 end
 
-function M.get_all_contents()
-  local links = M.get_repos()
-  local contents = {}
+-- function M.get_all_contents()
+--   local urls = M.get_repos()
+--   local contents = {}
 
-  for _, link in pairs(links) do
-    if link then
-      table.insert(contents, curl.get_file(link))
-    end
-  end
+--   for _, url in pairs(urls) do
+--     if url then
+--       local content = curl.get_content(url)
 
-  return contents
-end
+--       if not content then
+--         log.warn("Could not retrieve the contents of: " .. url)
+--       end
+
+--       table.insert(contents, content)
+--     end
+--   end
+
+--   return contents
+-- end
 
 function M.load_all()
-  local repos_contents = M.get_all_contents()
+  local urls = M.get_repos()
   local repos = {}
 
-  for _, contents in pairs(repos_contents) do
-    local ok, results = sandbox.run(contents)
+  for _, url in pairs(urls) do
+    local contents = curl.get_content(url)
 
-    if ok then
-      -- TODO: add env
-      table.insert(repos, { manteiners = results.manteiners, url = results.url, search = results.search })
+    if not contents then
+      log.error("Could not access: " .. url)
       goto continue
     end
 
-    log.warn(("There was a problem loading the repo. It was ignored. Error: %s"):format(results))
-    ::continue::
-  end
+    local ok, env = sandbox.run(contents)
 
-  if tbl.isempty(repos) then
-    return nil
+    if not (ok and env) then
+      log.warn(("There was a problem loading content from the repo. Error: %s"):format(env))
+      goto continue
+    end
+
+    table.insert(repos, {
+      manteiners = env.manteiners,
+      url = env.url,
+      search = env.search,
+      os = env.os,
+      arch = env.arch,
+    })
+
+    ::continue::
   end
 
   return repos

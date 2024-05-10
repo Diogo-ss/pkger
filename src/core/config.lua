@@ -1,7 +1,7 @@
-local fs = require "utils.fs"
-local tbl = require "utils.tbl"
-local sandbox = require "utils.sandbox"
-local log = require "utils.log"
+local fs = require "src.utils.fs"
+local tbl = require "src.utils.tbl"
+local sandbox = require "src.utils.sandbox"
+local log = require "src.utils.log"
 
 local M = {}
 
@@ -37,7 +37,7 @@ end
 
 function M.init()
   -- load global config
-  require "core.global"
+  require "src.core.global"
 
   local ok, result = pcall(M.read_user_config)
 
