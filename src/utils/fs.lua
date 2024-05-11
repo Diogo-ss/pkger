@@ -81,7 +81,21 @@ M.normalize = path.normalize
 
 M.mkdir = path.mkdir
 
-M.rm_dir = path.rmdir
+M.rm_dir = function(dir)
+  path.each(path.join(dir, "*"), function(P, mode)
+    if mode == "directory" then
+      path.rmdir(P)
+    else
+      path.remove(P)
+    end
+  end, {
+    param = "fm",
+    delay = true,
+    recurse = true,
+    reverse = true,
+  })
+  path.rmdir(dir)
+end
 
 M.cd = path.chdir
 

@@ -16,7 +16,7 @@ function M.show(results)
 end
 
 local function search(url, engine_type, name)
-  url = url:gsub("%${{ pkg%.name }}", name)
+  url = url:gsub("%${{%sname%s}}", name)
   local ok, engine = pcall(require, "src.commands.search." .. engine_type:lower())
 
   return ok and engine.search(url, name) or nil
@@ -36,6 +36,7 @@ pkgs: {
 function M.find(name)
   local results = {}
 
+  log.info "Loading repos..."
   local repos = tbl.map(repo.load_all(), function(val)
     if val.search and val.search.url and val.search.type then
       return val.search
