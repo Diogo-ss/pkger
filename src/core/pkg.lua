@@ -162,6 +162,7 @@ function M.get_master_pkg(name)
   return { version = infos.version, file = file }
 end
 
+-- TODO: adicinar suporte a versões
 function M.list_all_dependent_pkgs(name)
   local pkgs = M.list_packages()
   local list = {}

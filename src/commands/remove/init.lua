@@ -7,35 +7,23 @@ local fs = require "src.utils.fs"
 
 local M = {}
 
-function M.remove_depends(name, version)
-  local pkg = lpkg.get_pkg_infos(name, version)
+function M.clean_pkgs()
+  local pkgs = lpkg.list_packages()
 
-  if not (pkg and pkg.depends) then
-    return
-  end
+  fn.print(pkgs)
 
-  for _, depend_name in pairs(pkg.depends) do
-    local depend_pkg = lpkg.get_master_pkg(depend_name)
+  for _, pkg in pairs(pkgs) do
+    if pkg.is_dependency == true then
+      local dependents = lpkg.list_all_dependent_pkgs(pkg.name)
 
-    local infos = lpkg.get_pkg_infos(depend_name, depend_pkg.version)
-
-    if infos.is_dependency == true then
-      local all_pkg = lpkg.list_all_dependent_pkgs(infos.name)
-
-      for n, _depend in pairs(all_pkg) do
-        if _depend.name == name and _depend.version == version then
-          all_pkg[n] = nil
-        end
-      end
-
-      if tbl.isempty(all_pkg) then
-        M.remove(name, infos.version)
+      if tbl.isempty(dependents) then
+        M.remove(pkg.name, pkgs.version)
       end
     end
   end
 end
 
-function M.remove(name, version, is_dependency)
+function M.remove(name, version, is_dependency, force)
   local pkg_file = nil
   local dotpkg = lpkg.get_master_pkg(name)
 
@@ -49,6 +37,24 @@ function M.remove(name, version, is_dependency)
     pkg_file = dotpkg.file
   end
 
+  local dependents = lpkg.list_all_dependent_pkgs(name)
+
+  if not force and not tbl.isempty(dependents) then
+    local str = ""
+
+    for _, dependent in pairs(dependents) do
+      str = dependent.name .. "@" .. dependent.version .. " "
+    end
+
+    log.error("It was not possible to remove the package because it is a dependency for: " .. str)
+    error()
+  end
+
+  if not lpkg.has_package(name, version) then
+    log.warn(("Package is not installed: %s@%s"):format(name, version))
+    return
+  end
+
   local dir = fs.join(PKGER_DATA, name, version)
 
   if not fs.is_dir(dir) then
@@ -56,17 +62,13 @@ function M.remove(name, version, is_dependency)
     error()
   end
 
-  -- TODO: fix remove_depends
-
-  -- M.remove_depends(name, version)
-
-  print("Removido: " .. name .. " " .. version)
-
   fs.rm_dir(dir)
 
   if pkg_file then
     fs.rm(pkg_file)
   end
+
+  M.clean_pkgs()
 
   log.info(("Package removed: %s@%s"):format(name, version))
 end
@@ -75,7 +77,6 @@ function M.remove_pkgs(pkgs)
   for name, version in pairs(pkgs) do
     local ok, msg = pcall(M.remove, name, version)
     if not ok then
-      print(msg)
       version = version ~= "script" and "@" .. version or ""
       log.error("The package could not be removed: " .. name .. version)
     end
