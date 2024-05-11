@@ -10,8 +10,6 @@ local M = {}
 function M.clean_pkgs()
   local pkgs = lpkg.list_packages()
 
-  fn.print(pkgs)
-
   for _, pkg in pairs(pkgs) do
     if pkg.is_dependency == true then
       local dependents = lpkg.list_all_dependent_pkgs(pkg.name)
