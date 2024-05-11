@@ -114,4 +114,39 @@ function M.parse(pkgs)
   return results
 end
 
+function M.has_package(name, version)
+  local file = fs.join(PKGER_DATA, name, version, ".pkger")
+
+  return fs.is_file(file)
+end
+
+-- TODO: refatorar (gambiarra)
+function M.list_packages()
+  local pkgs = {}
+
+  fs.each(fs.join(PKGER_DATA, "*"), function(P)
+    fs.each(fs.join(P, "*"), function(p)
+      local file = fs.join(p, ".pkger")
+
+      if fs.is_file(file) then
+        local ok, content = fs.read_file(file, "r")
+
+        if ok then
+          local _ok, result = sandbox.run(content)
+
+          table.insert(pkgs, {
+            name = result.name,
+            version = result.version,
+            is_dependency = result.is_dependency,
+          })
+        end
+      end
+    end)
+  end, {
+    delay = true,
+  })
+
+  return pkgs
+end
+
 return M

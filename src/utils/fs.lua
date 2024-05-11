@@ -99,6 +99,10 @@ end
 
 M.cd = path.chdir
 
+M.each = path.each
+
+M.split = path.split
+
 M.exists = path.exists
 
 M.is_dir = path.isdir

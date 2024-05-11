@@ -3,6 +3,7 @@ local log = require "src.utils.log"
 local tbl = require "src.utils.tbl"
 local lpkg = require "src.core.pkg"
 local curl = require "src.utils.curl"
+local fn = require "src.utils.fn"
 
 local cache = {}
 
@@ -110,14 +111,14 @@ end
 function M.load_pkg(pkg, is_dependency)
   local dir = fs.join(PKGER_DATA, pkg.name, pkg.version)
 
-  -- TODO checar se o programa já esta instalado
+  local depends = lpkg.parse(pkg.depends)
 
-  -- TODO: dependências
-  -- if pkg.depends then
-  --   log.info "Starting the installation of dependencies..."
-  --   for _, name in pairs(pkg.depends) do
-  --     -- TODO: adiconar suporte a versão da dependecia
-  --     M.install(name, "script", true)
+  log.info "Checking for dependencies...."
+  -- for name, version in pairs(depends) do
+  --   local has = lpkg.has_package(name, version)
+
+  --   if not has then
+  --     M.install(name, version, true)
   --   end
   -- end
 
@@ -146,17 +147,31 @@ function M.load_pkg(pkg, is_dependency)
 name = %s
 version = %s
 is_dependency = %s
+depends = %s
 ]],
       pkg.name,
       pkg.version,
-      tostring(is_dependency)
+      tostring(is_dependency or false),
+      fn.inspect(pkg.depends or {})
     ))
   end
 
   log.info "Installation completed."
 end
 
-function M.install(name, version, is_dependency)
+function M.install(name, version, is_dependency, force)
+  local has = lpkg.has_package(name, version)
+
+  if not is_dependency and has and not force then
+    log.warn "The package is already installed. Use `--force` to reinstall it."
+    return
+  end
+
+  -- TODO: remove pkg
+  -- if has and force then
+  -- pkg.remove(pkg, version)
+  -- end
+
   log.info(("Starting installation: %s@%s"):format(name, version))
 
   local pkg = lpkg.get_pkg(cache.repos, name, version)
