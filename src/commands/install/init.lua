@@ -3,7 +3,6 @@ local log = require "src.utils.log"
 local tbl = require "src.utils.tbl"
 local lpkg = require "src.core.pkg"
 local curl = require "src.utils.curl"
-local flags = require "src.commands.install.flags"
 
 local cache = {}
 
@@ -41,7 +40,7 @@ function M.get_source_code(pkg)
     error()
   end
 
-  fs.rm(dir .. "/" .. file)
+  -- fs.rm(dir .. "/" .. file)
 end
 
 function M.run_pkg(pkg)
@@ -94,7 +93,7 @@ function M.create_link(pkg)
   local src_path = fs.join(dir, pkg.bin)
   local dest_path = fs.join(PKGER_BIN, bin_name)
 
-  local ok, msg = fs.link(src_path, dest_path)
+  local ok, msg = fs.link(src_path, dest_path, true)
 
   if not ok then
     log.error("Error creating symbolic link to bin: " .. src_path .. ". Error: " .. msg)
@@ -209,7 +208,7 @@ function M.install_pkgs(pkgs)
 end
 
 function M.parser(args)
-  local pkgs = flags.parse(args)
+  local pkgs = lpkg.parse(args)
 
   if tbl.isempty(pkgs) then
     log.error "No targets specified. Use --help."

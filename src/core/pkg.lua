@@ -13,7 +13,7 @@ local function env()
   return {
     system = fn.system,
     shell_code = fn.shell_code,
-    get = curl.get,
+    get = curl.download,
     rm = fs.rm,
     rm_dir = fs.rm_dir,
     cp = fs.cp,
@@ -91,6 +91,27 @@ function M.get_pkg(repos, name, version)
   end
 
   return nil
+end
+
+function M.parse(pkgs)
+  local results = {}
+
+  for _, pkg in pairs(pkgs) do
+    if pkg:find "@" then
+      local name, version = pkg:match "^(.+)@(.+)$"
+
+      if pkg == "@" or not (version or name) then
+        log.error("Package name is invalid: " .. pkg)
+        os.exit(1)
+      end
+
+      results[name] = version
+    else
+      results[pkg] = "script"
+    end
+  end
+
+  return results
 end
 
 return M
