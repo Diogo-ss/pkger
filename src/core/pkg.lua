@@ -125,28 +125,56 @@ function M.list_packages()
   local pkgs = {}
 
   fs.each(fs.join(PKGER_DATA, "*"), function(P)
-    fs.each(fs.join(P, "*"), function(p)
-      local file = fs.join(p, ".pkger")
+    if fn.endswith(P, ".pkger") then
+      local infos = dofile(P)
 
-      if fs.is_file(file) then
-        local ok, content = fs.read_file(file, "r")
-
-        if ok then
-          local _ok, result = sandbox.run(content)
-
-          table.insert(pkgs, {
-            name = result.name,
-            version = result.version,
-            is_dependency = result.is_dependency,
-          })
-        end
-      end
-    end)
+      table.insert(pkgs, infos)
+    end
   end, {
     delay = true,
+    recurse = true,
   })
 
   return pkgs
+end
+
+function M.get_pkg_infos(name, version)
+  local file = fs.join(PKGER_DATA, name, version, ".pkger")
+
+  local ok, infos = pcall(dofile, file)
+
+  if not ok then
+    return nil
+  end
+
+  return infos
+end
+
+function M.get_master_pkg(name)
+  local file = fs.join(PKGER_DATA, name, PKGER_MAIN_PKG)
+
+  local ok, infos = pcall(dofile, file)
+
+  if not ok then
+    return nil
+  end
+
+  return { version = infos.version, file = file }
+end
+
+function M.list_all_dependent_pkgs(name)
+  local pkgs = M.list_packages()
+  local list = {}
+
+  for _, pkg in pairs(pkgs) do
+    for _, depend_name in pairs(pkg.depends or {}) do
+      if depend_name == name then
+        table.insert(list, { name = pkg.name, version = pkg.version })
+      end
+    end
+  end
+
+  return list
 end
 
 return M

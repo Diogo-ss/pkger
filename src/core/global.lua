@@ -15,5 +15,6 @@ PKGER_TMP_DIR = PKGER_PREFIX .. "/tmp"
 PKGER_USER_AGENT = ("PKGER/%s (%s; %s %s)"):format(PKGER_VERSION, _VERSION, sys.os, sys.arch)
 PKGER_REPOS_FILE = PKGER_CONFIG .. "/repos"
 PKGER_CONFIG_FILE = PKGER_CONFIG .. "/config.lua"
+PKGER_MAIN_PKG = ".pkg"
 -- PKGER_MODULES = PKGER_PREFIX .. "/modules"
 -- PKGER_INSTANCE =

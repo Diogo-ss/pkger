@@ -4,6 +4,8 @@ local tbl = require "src.utils.tbl"
 local lpkg = require "src.core.pkg"
 local curl = require "src.utils.curl"
 local fn = require "src.utils.fn"
+local sys = require "src.utils.sys"
+local json = require "dkjson"
 
 local cache = {}
 
@@ -45,6 +47,8 @@ function M.get_source_code(pkg)
 end
 
 function M.run_pkg(pkg)
+  log.info "Starting script execution..."
+
   local order = {
     "pre_biuld",
     "biuld",
@@ -108,8 +112,40 @@ function M.create_link(pkg)
   -- end
 end
 
+function M.gen_pkger_file(pkg, is_dependency)
+  local dir = pkg.INSTALLATION_DIRECTORY
+
+  local f = io.open(fs.join(dir, ".pkger"), "w+")
+
+  local infos = {
+    pkger_version = PKGER_VERSION,
+    os = sys.os,
+    arch = sys.arch,
+    aliases = pkg.aliases,
+    name = pkg.name,
+    version = pkg.version,
+    bin = pkg.bin,
+    is_dependency = is_dependency or false,
+    depends = pkg.depends or {},
+    script_infos = pkg.script_infos,
+    dir = pkg.INSTALLATION_DIRECTORY,
+  }
+
+  if not f then
+    log.error "failed to create `.pkger` file."
+    error()
+  end
+
+  f:write("return " .. fn.inspect(infos))
+  f:close()
+end
+
 function M.load_pkg(pkg, is_dependency)
   local dir = fs.join(PKGER_DATA, pkg.name, pkg.version)
+
+  if fs.is_dir(dir) then
+    fs.rm_dir(dir)
+  end
 
   local depends = lpkg.parse(pkg.depends)
 
@@ -134,27 +170,11 @@ function M.load_pkg(pkg, is_dependency)
 
   M.get_source_code(pkg)
 
-  log.info "Starting script execution..."
   M.run_pkg(pkg)
 
-  M.create_link(pkg)
+  M.gen_pkger_file(pkg, is_dependency)
 
-  local f = io.open(dir .. "/.pkger", "w+")
-
-  if f then
-    f:write(string.format(
-      [[
-name = %s
-version = %s
-is_dependency = %s
-depends = %s
-]],
-      pkg.name,
-      pkg.version,
-      tostring(is_dependency or false),
-      fn.inspect(pkg.depends or {})
-    ))
-  end
+  -- M.create_link(pkg)
 
   log.info "Installation completed."
 end
