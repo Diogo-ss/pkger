@@ -1,0 +1,1 @@
+-- TODO: fazer um comando que checa a integridade os pacotes de garante todos o .pkg corretamente

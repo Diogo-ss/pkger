@@ -19,6 +19,25 @@ function M.clean_pkgs()
       end
     end
   end
+
+  fs.each(fs.join(PKGER_DATA, "*"), function(P, mode)
+    if mode == "directory" then
+      local remove = true
+
+      fs.each(fs.join(P, "*"), function(p, _)
+        if p then
+          remove = false
+        end
+      end)
+
+      if remove then
+        fs.rm(P)
+      end
+    end
+  end, {
+    param = "fm",
+    delay = true,
+  })
 end
 
 function M.remove(name, version, is_dependency, force)
@@ -60,12 +79,25 @@ function M.remove(name, version, is_dependency, force)
     error()
   end
 
-  fs.rm_dir(dir)
+  if pkg_file or (dotpkg and dotpkg.version == version and dotpkg.name == name) then
+    local infos = lpkg.get_pkg_infos(name, version)
 
-  if pkg_file then
-    fs.rm(pkg_file)
+    local bin_name = infos and infos.bin_name or nil
+
+    -- remove symbolic link
+    if bin_name then
+      local path = fs.join(PKGER_BIN, bin_name)
+      fs.rm(path)
+    else
+      log.err(("It was not possible to remove the symbolic link: %s@%s"):format(name, version))
+    end
+
+    if not fs.rm(pkg_file) then
+      log.err("Could not remove " .. PKGER_MAIN_PKG)
+    end
   end
 
+  fs.rm_dir(dir)
   M.clean_pkgs()
 
   log.info(("Package removed: %s@%s"):format(name, version))

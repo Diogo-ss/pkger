@@ -16,5 +16,6 @@ PKGER_USER_AGENT = ("PKGER/%s (%s; %s %s)"):format(PKGER_VERSION, _VERSION, sys.
 PKGER_REPOS_FILE = PKGER_CONFIG .. "/repos"
 PKGER_CONFIG_FILE = PKGER_CONFIG .. "/config.lua"
 PKGER_MAIN_PKG = ".pkg"
+PKGER_PKG_INFOS = ".pkger"
 -- PKGER_MODULES = PKGER_PREFIX .. "/modules"
 -- PKGER_INSTANCE =

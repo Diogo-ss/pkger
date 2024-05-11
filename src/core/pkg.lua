@@ -116,7 +116,7 @@ function M.parse(pkgs)
 end
 
 function M.has_package(name, version)
-  local file = fs.join(PKGER_DATA, name, version, ".pkger")
+  local file = fs.join(PKGER_DATA, name, version, PKGER_PKG_INFOS)
 
   return fs.is_file(file)
 end
@@ -126,7 +126,7 @@ function M.list_packages()
   local pkgs = {}
 
   fs.each(fs.join(PKGER_DATA, "*"), function(P)
-    if fn.endswith(P, ".pkger") then
+    if fn.endswith(P, PKGER_PKG_INFOS) then
       local infos = dofile(P)
 
       table.insert(pkgs, infos)
@@ -140,7 +140,7 @@ function M.list_packages()
 end
 
 function M.get_pkg_infos(name, version)
-  local file = fs.join(PKGER_DATA, name, version, ".pkger")
+  local file = fs.join(PKGER_DATA, name, version, PKGER_PKG_INFOS)
 
   local ok, infos = pcall(dofile, file)
 
@@ -160,7 +160,7 @@ function M.get_master_pkg(name)
     return nil
   end
 
-  return { version = infos.version, file = file }
+  return infos
 end
 
 -- TODO: adicinar suporte a versões
@@ -181,51 +181,54 @@ end
 
 function M.gen_pkger_file(pkg, is_dependency)
   local dir = pkg.INSTALLATION_DIRECTORY
-  local f = io.open(fs.join(dir, ".pkger"), "w+")
+  local file = fs.join(PKGER_DATA, pkg.name, pkg.version, PKGER_PKG_INFOS)
 
   local infos = {
     pkger_version = PKGER_VERSION,
     os = sys.os,
     arch = sys.arch,
-    aliases = pkg.aliases,
+    -- aliases = pkg.aliases,
     name = pkg.name,
     version = pkg.version,
     bin = pkg.bin,
     is_dependency = is_dependency or false,
     depends = pkg.depends or {},
+    installed_at = os.date "%Y-%m-%d %H:%M:%S",
     script_infos = pkg.script_infos,
-    dir = pkg.INSTALLATION_DIRECTORY,
+    dir = dir,
     prefix = fs.join(dir, pkg.bin),
+    bin_name = pkg.bin:match ".+/([^/]+)$" or pkg.bin,
+    file = file,
   }
 
-  if not f then
-    log.error "Failed to create `.pkger` file."
-    error()
-  end
+  local ok, _ = fs.write_file(file, "return " .. fn.inspect(infos))
 
-  f:write("return " .. fn.inspect(infos))
-  f:close()
+  if not ok then
+    log.err(("Failed to create `%s` file."):format(PKGER_PKG_INFOS))
+  end
 end
 
 function M.gen_pkg_file(pkg)
+  local dir = pkg.INSTALLATION_DIRECTORY
   local file = fs.join(PKGER_DATA, pkg.name, PKGER_MAIN_PKG)
-  local f = io.open(file, "w+")
 
   local infos = {
     pkger_version = PKGER_VERSION,
     name = pkg.name,
+    created_at = os.date "%Y-%m-%d %H:%M:%S",
     -- aliases = pkg.aliases,
     version = pkg.version,
-    dir = file,
+    prefix = fs.join(dir, pkg.bin),
+    file = file,
+    dir = dir,
+    bin_name = pkg.bin:match ".+/([^/]+)$" or pkg.bin,
   }
 
-  if not f then
-    log.error(("Failed to create `%s` file."):format(PKGER_MAIN_PKG))
-    error()
-  end
+  local ok, _ = fs.write_file(file, "return " .. fn.inspect(infos))
 
-  f:write("return " .. fn.inspect(infos))
-  f:close()
+  if not ok then
+    log.err(("Failed to create `%s` file."):format(PKGER_MAIN_PKG))
+  end
 end
 
 function M.run_pkg(pkg)
@@ -251,15 +254,13 @@ function M.run_pkg(pkg)
     end
 
     if type(func) ~= "function" then
-      log.error(n .. " não é do tipo função.")
-      error()
+      log.err(n .. " não é do tipo função.")
     end
 
     local ok, _ = pcall(func)
 
     if not ok then
-      log.error(n .. " cannot be executed.")
-      error()
+      log.err(n .. " cannot be executed.")
     end
 
     ::continue::
@@ -279,8 +280,7 @@ function M.get_source_code(pkg)
   local ok, _ = pcall(curl.download, url, file)
 
   if not ok then
-    log.error("Error trying to download file: " .. url)
-    error()
+    log.err("Error trying to download file: " .. url)
   end
 
   -- if pkg.version ~= "script" and pkg.version ~= "head" then
@@ -294,11 +294,18 @@ function M.get_source_code(pkg)
   local _ok, _ = fs.extract(file)
 
   if not _ok then
-    log.error("Error trying to extract file: " .. file)
-    error()
+    log.err("Error trying to extract file: " .. file)
   end
 
   -- fs.rm(dir .. "/" .. file)
+end
+
+function M.remove_link(name, version)
+  if not version then
+    local infos = M.get_master_pkg(name)
+
+    fn.print(infos)
+  end
 end
 
 function M.create_link(pkg)
@@ -307,8 +314,7 @@ function M.create_link(pkg)
   fs.mkdir(PKGER_BIN)
 
   if not fs.is_dir(PKGER_BIN) then
-    log.error "Couldn't get the directory for bin."
-    error()
+    log.err "Couldn't get the directory for bin."
   end
 
   local bin_name = pkg.bin:match ".+/([^/]+)$" or pkg.bin
@@ -318,16 +324,10 @@ function M.create_link(pkg)
   local ok, msg = fs.link(bin_path, dest_path, true)
 
   if not ok then
-    log.error("Error creating symbolic link to bin: " .. bin_path .. ". Error: " .. msg)
-    error()
+    log.err("Error creating symbolic link to bin: " .. bin_path .. ". Error: " .. msg)
   end
 
-  -- TODO: use test
-  -- local _ok, _ = pcall(pkg.test)
-
-  -- if not _ok then
-  --   log.error "O teste apresentou falha na instlação. Deseja remover o binário?"
-  -- end
+  -- TODO: usar test
 end
 
 return M
