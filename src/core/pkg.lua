@@ -135,9 +135,11 @@ function M.list_packages()
 
   fs.each(fs.join(PKGER_DATA, "*"), function(P)
     if fn.endswith(P, PKGER_PKG_INFOS) then
-      local infos = dofile(P)
+      local ok, infos = pcall(dofile, P)
 
-      table.insert(pkgs, infos)
+      if ok then
+        table.insert(pkgs, infos)
+      end
     end
   end, {
     delay = true,
@@ -147,7 +149,7 @@ function M.list_packages()
   return pkgs
 end
 
-function M.list_current_pkgs()
+function M.list_primary_pkgs()
   local current_pkgs = {}
 
   fs.each(fs.join(PKGER_DATA, "*"), function(pkg_dir)
@@ -157,11 +159,7 @@ function M.list_current_pkgs()
         local ok, main_pkg = pcall(dofile, main_pkg_file)
         if ok then
           table.insert(current_pkgs, main_pkg)
-        else
-          log.err("Error loading .pkg: " .. main_pkg_file)
         end
-      else
-        log.warn("The package does not have a main version defined: " .. pkg_dir)
       end
     end
   end, {
