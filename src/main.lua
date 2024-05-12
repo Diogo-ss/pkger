@@ -1,6 +1,7 @@
 local config = require "src.core.config"
 local log = require "src.utils.log"
 local c = require "src.utils.colors"
+local list = require "src.utils.list"
 local fn = require "src.utils.fn"
 
 config.init()
@@ -15,6 +16,8 @@ for i, arg in ipairs(args) do
     args[i] = nil
   end
 end
+
+args = list.unique(args)
 
 if not command then
   log.error(("Use '%s' for usage information."):format(c.green "pkger --help"))

@@ -11,7 +11,7 @@ local cache = {}
 
 local M = {}
 
-function M.load_pkg(pkg, is_dependency)
+function M.load_pkg(pkg, is_dependency, flags)
   local dir = fs.join(PKGER_DATA, pkg.name, pkg.version)
 
   if fs.is_dir(dir) then
@@ -35,8 +35,7 @@ function M.load_pkg(pkg, is_dependency)
 
   fs.mkdir(dir)
   if not fs.is_dir(dir) then
-    log.error "Error trying to create installation directory."
-    error()
+    log.err "Error trying to create installation directory."
   end
 
   fs.cd(dir)
@@ -49,6 +48,15 @@ function M.load_pkg(pkg, is_dependency)
   lpkg.run_pkg(pkg)
 
   lpkg.gen_pkger_file(pkg, is_dependency)
+
+  if flags.upgrade then
+    log.info(("Installation completed: %s@%s"):format(pkg.name, pkg.version))
+    return
+  end
+
+  -- TODO: adiconar caso onde é flag de upgrade e é uma depencia
+  -- if flags.upgrade and is_dependency then
+  -- end
 
   if not lpkg.get_current_pkg(pkg.name) then
     lpkg.create_link(pkg)
