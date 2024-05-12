@@ -2,12 +2,8 @@ local fs = require "src.utils.fs"
 local log = require "src.utils.log"
 local tbl = require "src.utils.tbl"
 local lpkg = require "src.core.pkg"
-local curl = require "src.utils.curl"
 local fn = require "src.utils.fn"
-local sys = require "src.utils.sys"
-local json = require "dkjson"
 local repo = require "src.core.repo"
-local remove = require "src.commands.remove"
 
 local cache = {}
 
@@ -42,6 +38,7 @@ function M.load_pkg(pkg, is_dependency)
   end
 
   fs.cd(dir)
+  pkg.prefix = fs.join(dir, pkg.bin)
   pkg.INSTALLATION_DIRECTORY = dir
   cache.installation_directory = dir
 
@@ -79,9 +76,9 @@ function M.install(name, version, is_dependency, force)
   end
 
   -- TODO: testar o uso durante a instalação
-  if has and force then
-    pkg.remove(pkg.name, pkg.version)
-  end
+  -- if has and force then
+  --   pkg.remove(pkg.name, pkg.version)
+  -- end
 
   log.info(("Starting installation: %s@%s"):format(pkg.name, pkg.version))
 
@@ -92,18 +89,18 @@ function M.install_pkgs(pkgs)
   log.info "Loading repos..."
   cache.repos = cache.repos or repo.load_all()
   -- remover esse repo padrão e decomentar acima
-  cache.repos = {
-    {
-      manteiners = { "Diogo-ss" },
-      os = "linux",
-      arch = "x86",
-      search = {
-        type = "github",
-        url = "https://api.github.com/repos/pkger/core-pkgs/git/trees/main?recursive=1",
-      },
-      url = "https://raw.githubusercontent.com/pkger/core-pkgs/main/pkgs/${{ name }}/${{ version }}/pkg.lua",
-    },
-  }
+  -- cache.repos = {
+  --   {
+  --     manteiners = { "Diogo-ss" },
+  --     os = "linux",
+  --     arch = "x86",
+  --     search = {
+  --       type = "github",
+  --       url = "https://api.github.com/repos/pkger/core-pkgs/git/trees/main?recursive=1",
+  --     },
+  --     url = "https://raw.githubusercontent.com/pkger/core-pkgs/main/pkgs/${{ name }}/${{ version }}/pkg.lua",
+  --   },
+  -- }
 
   cache.current_dir = fs.cwd()
 

@@ -23,6 +23,14 @@ local function env()
     cwd = fs.cwd,
     extract = fs.extract,
     INSTALLATION_ENVIRONMENT = true,
+    PKGER_PREFIX = PKGER_PREFIX,
+    PKGER_VERSION = PKGER_VERSION,
+    PKGER_BIN = PKGER_BIN,
+    PKGER_ETC = PKGER_ETC,
+    PKGER_LIB = PKGER_LIB,
+    PKGER_DATA = PKGER_DATA,
+    PKGER_CACHE = PKGER_CACHE,
+    PKGER_TMP_DIR = PKGER_TMP_DIR,
   }
 end
 
@@ -196,7 +204,7 @@ function M.gen_pkger_file(pkg, is_dependency)
     installed_at = os.date "%Y-%m-%d %H:%M:%S",
     script_infos = pkg.script_infos,
     dir = dir,
-    prefix = fs.join(dir, pkg.bin),
+    prefix = pkg.prefix,
     bin_name = pkg.bin:match ".+/([^/]+)$" or pkg.bin,
     file = file,
   }
@@ -218,7 +226,7 @@ function M.gen_pkg_file(pkg)
     created_at = os.date "%Y-%m-%d %H:%M:%S",
     -- aliases = pkg.aliases,
     version = pkg.version,
-    prefix = fs.join(dir, pkg.bin),
+    prefix = pkg.prefix,
     file = file,
     dir = dir,
     bin_name = pkg.bin:match ".+/([^/]+)$" or pkg.bin,

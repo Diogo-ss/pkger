@@ -1,7 +1,6 @@
 local c = require "src.utils.colors"
 local log = require "src.utils.log"
 local lpkg = require "src.core.pkg"
-local fn = require "src.utils.fn"
 local fs = require "src.utils.fs"
 
 local M = {}

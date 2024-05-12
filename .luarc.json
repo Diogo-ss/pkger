@@ -1,7 +1,18 @@
 {
-    "diagnostics.globals": [
-        "jit",
-        "INSTALLATION_ENVIRONMENT",
-        "INSTALLATION_DIRECTORY"
-    ]
+  "diagnostics.globals": [
+    "jit",
+    "INSTALLATION_ENVIRONMENT",
+    "INSTALLATION_DIRECTORY",
+    "PKGER_PREFIX",
+    "PKGER_VERSION",
+    "PKGER_BIN",
+    "PKGER_ETC",
+    "PKGER_LIB",
+    "PKGER_DATA",
+    "PKGER_CACHE",
+    "PKGER_LOCKED",
+    "PKGER_CONFIG",
+    "PKGER_TMP_DIR",
+    "PKGER_USER_AGENT"
+  ]
 }
