@@ -1,35 +1,27 @@
 local fn = require "src.utils.fn"
 local log = require "src.utils.log"
 local c = require "src.utils.colors"
+local sys = require "src.utils.sys"
 
 local M = {}
 
--- function parse_opts(args)
---   local pkgs = {}
---   local opts = {}
+local function _log(key, value)
+  log(c.green(key) .. ": " .. value)
+end
 
---   for i, value in ipairs(args) do
---     if fn.startswith(value, "--") then
---       local option, arg_value = value:match "^%-%-(%w+)%=(.+)"
---       if option then
---         opts[option] = tonumber(arg_value) or arg_value
---       else
---         opts[value:sub(3)] = true
---       end
---     else
---       table.insert(pkgs, value)
---     end
---   end
-
---   return { pkgs = pkgs, opts = opts }
--- end
-
-function M.parser(args)
+function M.config(args, flags)
   for key, value in pairs(_G) do
     if type(value) == "string" and fn.startswith(key, "PKGER") then
-      log(c.green(key) .. ": " .. value)
+      _log(key, value)
     end
   end
+
+  _log("OS", sys.os)
+  _log("ARCH", sys.arch)
+end
+
+function M.parser(args, flags)
+  M.config(args, flags)
 end
 
 return M
