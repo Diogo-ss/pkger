@@ -74,15 +74,12 @@ function M.install(name, version, is_dependency, flags)
   local has = lpkg.has_package(pkg.name, pkg.version)
 
   if has and not flags.force then
-    -- if not is_dependency then
-    -- log.warn "The package is already installed. Use `--force` to reinstall it."
-    --   return
-    -- end
-
     local infos = dofile(has)
 
+    -- If the package is not a dependency, it does not need to be changed.
     if not infos.is_dependency then
-      -- ele envia a msg apenas de não for a instalação de uma dependência
+      -- If the current installation is not for a dependency, a message will be displayed
+      -- this is to keep the console more organized
       if not is_dependency then
         log.warn "Installation skipped as the package is already installed."
         -- log.warn "The package is already installed. Use `--force` to reinstall it."
@@ -90,6 +87,8 @@ function M.install(name, version, is_dependency, flags)
       return
     end
 
+    -- If the package is a dependency and the current installation is not for a dependency,
+    -- the package will be marked as non-dependency.
     if infos.is_dependency and not is_dependency then
       lpkg.gen_pkger_file(infos, false)
       log.warn(("%s has been updated, %s has been added to list of packages."):format(PKGER_PKG_INFOS, c.green(name)))
