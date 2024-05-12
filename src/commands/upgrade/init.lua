@@ -27,6 +27,10 @@ function M.upgrade_pkg(pkg, is_dependency, flags)
     os.exit(1)
   end
 
+  if pkg.pinned then
+    log.err(("%s can't be updated because %s is pinned. Use `unpin` to undo."):format(pkg.name, pkg.version))
+  end
+
   log.info "Checking for a new version...."
   local new_pkg = lpkg.get_pkg(cache.repos, pkg.name, "script")
 
@@ -51,7 +55,7 @@ function M.upgrade_pkg(pkg, is_dependency, flags)
     -- TODO: create save orignal link
     S.switch(new_pkg.name, new_pkg.version)
 
-    log.info(("%s be updated."):format(pkg.version))
+    log.info(("%s be updated."):format(pkg.name))
     return
   end
 
@@ -92,9 +96,7 @@ function M.parser(args, flags)
   end
 
   for _, pkg in pairs(pkgs) do
-    M.upgrade_pkg(pkg, flags)
-    -- local ok, i = pcall(M.upgrade, pkg, flags)
-    -- print(i)
+    local ok, _ = pcall(M.upgrade_pkg, pkg, flags)
   end
 end
 

@@ -29,7 +29,7 @@ end
 
 function M.err(text)
   M.error(text)
-  error()
+  error(text)
 end
 
 setmetatable(M, {
