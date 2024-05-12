@@ -172,6 +172,45 @@ function M.list_current_pkgs()
   return current_pkgs
 end
 
+function M.list_available_versions(name)
+  local pkgs = M.list_packages()
+  local versions = {}
+
+  for _, pkg in pairs(pkgs) do
+    if pkg.name == name then
+      table.insert(versions, pkg.version)
+    end
+  end
+
+  return versions
+
+  -- local versions = {}
+  -- local dir = fs.join(PKGER_DATA, name)
+
+  -- if not fs.is_dir(dir) then
+  --   return versions
+  -- end
+
+  -- fs.each(fs.join(dir, "*"), function(P)
+  --   if fs.is_dir(P) then
+  --     local file = fs.join(P, PKGER_PKG_INFOS)
+
+  --     if fs.is_file(file) then
+  --       local ok, pkg = pcall(dofile, file)
+
+  --       if ok and pkg.version then
+  --         table.insert(versions, pkg.version)
+  --       end
+  --     end
+  --   end
+  -- end, {
+  --   delay = true,
+  --   recurse = false,
+  -- })
+
+  -- return versions
+end
+
 function M.get_pkg_infos(name, version)
   local file = fs.join(PKGER_DATA, name, version, PKGER_PKG_INFOS)
 
