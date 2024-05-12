@@ -151,7 +151,7 @@ function M.get_pkg_infos(name, version)
   return infos
 end
 
-function M.get_master_pkg(name)
+function M.get_current_pkg(name)
   local file = fs.join(PKGER_DATA, name, PKGER_MAIN_PKG)
 
   local ok, infos = pcall(dofile, file)
@@ -302,7 +302,7 @@ end
 
 function M.remove_link(name, version)
   if not version then
-    local infos = M.get_master_pkg(name)
+    local infos = M.get_current_pkg(name)
 
     fn.print(infos)
   end

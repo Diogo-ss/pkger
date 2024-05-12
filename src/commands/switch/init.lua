@@ -9,7 +9,7 @@ local c = require "src.utils.colors"
 local M = {}
 
 function M.switch(name, version)
-  local current_pkg = lpkg.get_master_pkg(name)
+  local current_pkg = lpkg.get_current_pkg(name)
 
   if current_pkg and current_pkg.name == name and current_pkg.version == version then
     log.info(c.green(name) .. " is already in " .. c.cyan(version))

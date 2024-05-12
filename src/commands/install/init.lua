@@ -51,7 +51,7 @@ function M.load_pkg(pkg, is_dependency)
 
   lpkg.gen_pkger_file(pkg, is_dependency)
 
-  if not lpkg.get_master_pkg(pkg.name) then
+  if not lpkg.get_current_pkg(pkg.name) then
     lpkg.create_link(pkg)
     lpkg.gen_pkg_file(pkg)
   else

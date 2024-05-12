@@ -42,7 +42,7 @@ end
 
 function M.remove(name, version, is_dependency, force)
   local pkg_file = nil
-  local dotpkg = lpkg.get_master_pkg(name)
+  local dotpkg = lpkg.get_current_pkg(name)
 
   if not version or version == "script" or (dotpkg and version == dotpkg.version) then
     if not dotpkg then

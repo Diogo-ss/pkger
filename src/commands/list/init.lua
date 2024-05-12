@@ -1,20 +1,17 @@
-local pkg = require "src.core.pkg"
 local c = require "src.utils.colors"
 local log = require "src.utils.log"
-local fn = require "src.utils.fn"
+local lpkg = require "src.core.pkg"
 
 local M = {}
 
-function M.parser(args)
-  fn.print(pkg.list_packages())
+function M.parser(_)
+  local pkgs = lpkg.list_packages()
 
-  -- fn.print(pkg.get_pkg_infos("neovim", "0.9.5"))
-
-  -- local pkgs = pkg.list_packages()
-
-  -- for _, _pkg in pairs(pkgs) do
-  --   log(fn.inspect(_pkg))
-  -- end
+  for _, pkg in pairs(pkgs) do
+    local current_pkg = lpkg.get_current_pkg(pkg.name) or {}
+    local suffix = current_pkg.version == pkg.version and c.cyan " ●" or ""
+    log(c.green(pkg.name) .. ": " .. pkg.version .. suffix)
+  end
 end
 
 return M
