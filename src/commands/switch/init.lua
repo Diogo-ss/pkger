@@ -3,13 +3,14 @@ local lpkg = require "src.core.pkg"
 local c = require "src.utils.colors"
 local L = require "src.commands.link"
 local U = require "src.commands.unlink"
+local fn = require "src.utils.fn"
 
 local M = {}
 
 function M.switch(name, version)
-  local current_pkg = lpkg.get_current_pkg(name)
+  local pkg = lpkg.get_current_pkg(name)
 
-  if current_pkg and current_pkg.name == name and current_pkg.version == version then
+  if pkg and pkg.name == name and pkg.version == version then
     log.info(c.green(name) .. " is already in " .. c.cyan(version))
     return
   end
@@ -18,11 +19,15 @@ function M.switch(name, version)
     log.err(("Version %s is not installed"):format(c.cyan(version)))
   end
 
+  if pkg and pkg.pinned then
+    log.err(("%s can't be updated because %s is pinned. Use `unpin` to undo."):format(pkg.name, pkg.version))
+  end
+
   U.unlink(name)
   L.link(name, version, { overwrite = true })
 
-  if current_pkg and current_pkg.version then
-    log.info(("%s: %s --> %s"):format(name, current_pkg.version, version))
+  if pkg and pkg.version then
+    log.info(("%s: %s --> %s"):format(name, pkg.version, version))
     return
   end
 end
