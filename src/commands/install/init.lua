@@ -131,7 +131,7 @@ end
 function M.parser(args)
   local pkgs = lpkg.parse(args)
 
-  if tbl.isempty(pkgs) then
+  if tbl.is_empty(pkgs) then
     log.error "No targets specified. Use --help."
     os.exit(1)
   end

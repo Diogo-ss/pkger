@@ -1,6 +1,6 @@
 local M = {}
 
-function M.isempty(tbl)
+function M.is_empty(tbl)
   return rawequal(next(tbl), nil)
 end
 

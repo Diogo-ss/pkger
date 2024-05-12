@@ -35,7 +35,7 @@ function M.search(url, name)
   local files = json.decode(response)
   local pkgs = filter(files.tree, name)
 
-  if tbl.isempty(pkgs) then
+  if tbl.is_empty(pkgs) then
     return nil
   end
 

@@ -26,7 +26,7 @@ function M.get_repos()
     respos = list.unique(respos)
   end
 
-  return tbl.isempty(respos) and default or respos
+  return tbl.is_empty(respos) and default or respos
 end
 
 -- function M.get_all_contents()

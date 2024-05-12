@@ -131,4 +131,6 @@ M.lock_dir = lfs.lock_dir
 
 M.link = lfs.link
 
+M.is_empty = path.isempty
+
 return M

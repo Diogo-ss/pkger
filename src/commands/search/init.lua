@@ -43,7 +43,7 @@ function M.find(name)
     end
   end)
 
-  if tbl.isempty(repos) then
+  if tbl.is_empty(repos) then
     log.error "No repository with search support was found."
     os.exit(1)
   end
@@ -67,7 +67,7 @@ function M.parser(args)
 
   local results = M.find(args[1])
 
-  if tbl.isempty(results) then
+  if tbl.is_empty(results) then
     log.warn("No packages found for: " .. args[1])
     os.exit(1)
   end
