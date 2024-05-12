@@ -4,6 +4,8 @@ local tbl = require "src.utils.tbl"
 local lpkg = require "src.core.pkg"
 local fn = require "src.utils.fn"
 local repo = require "src.core.repo"
+local R = require "src.commands.remove"
+local c = require "src.utils.colors"
 
 local cache = {}
 
@@ -58,7 +60,10 @@ function M.load_pkg(pkg, is_dependency)
   log.info "Installation completed."
 end
 
-function M.install(name, version, is_dependency, force)
+function M.install(name, version, is_dependency, flags)
+  is_dependency = is_dependency or false
+  flags = flags or {}
+
   local pkg = lpkg.get_pkg(cache.repos, name, version)
 
   if not pkg then
@@ -68,24 +73,43 @@ function M.install(name, version, is_dependency, force)
 
   local has = lpkg.has_package(pkg.name, pkg.version)
 
-  if has and not force then
-    if not is_dependency then
-      log.warn "The package is already installed. Use `--force` to reinstall it."
+  if has and not flags.force then
+    -- if not is_dependency then
+    -- log.warn "The package is already installed. Use `--force` to reinstall it."
+    --   return
+    -- end
+
+    local infos = dofile(has)
+
+    if not infos.is_dependency then
+      -- ele envia a msg apenas de não for a instalação de uma dependência
+      if not is_dependency then
+        log.warn "Installation skipped as the package is already installed."
+        -- log.warn "The package is already installed. Use `--force` to reinstall it."
+      end
+      return
     end
+
+    if infos.is_dependency and not is_dependency then
+      lpkg.gen_pkger_file(infos, false)
+      log.warn(("%s has been updated, %s has been added to list of packages."):format(PKGER_PKG_INFOS, c.green(name)))
+      return
+    end
+
     return
   end
 
   -- TODO: testar o uso durante a instalação
-  -- if has and force then
-  --   pkg.remove(pkg.name, pkg.version)
-  -- end
+  if has and flags.force then
+    R.remove(pkg.name, pkg.version, is_dependency)
+  end
 
   log.info(("Starting installation: %s@%s"):format(pkg.name, pkg.version))
 
   M.load_pkg(pkg, is_dependency)
 end
 
-function M.install_pkgs(pkgs)
+function M.install_pkgs(pkgs, flags)
   log.info "Loading repos..."
   cache.repos = cache.repos or repo.load_all()
   -- remover esse repo padrão e decomentar acima
@@ -110,9 +134,7 @@ function M.install_pkgs(pkgs)
   end
 
   for name, version in pairs(pkgs) do
-    local ok, err = pcall(M.install, name, version)
-
-    fn.print(err)
+    local ok, err = pcall(M.install, name, version, false, flags)
 
     if not ok then
       log.error(("Installation not completed: %s@%s"):format(name, version))
@@ -125,7 +147,7 @@ function M.install_pkgs(pkgs)
   end
 end
 
-function M.parser(args)
+function M.parser(args, flags)
   local pkgs = lpkg.parse(args)
 
   if tbl.is_empty(pkgs) then
@@ -136,7 +158,7 @@ function M.parser(args)
   -- TODO: load cache
   -- M.load_cache()
 
-  M.install_pkgs(pkgs)
+  M.install_pkgs(pkgs, flags)
 end
 
 return M

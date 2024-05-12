@@ -93,7 +93,22 @@ function M.sleep(sec)
   end
 end
 
-function M.sha1_file(path)
+function M.sha1sum(path)
+  local exit_code, output = M.system { "sha1sum", path }
+
+  if exit_code == 0 and output then
+    local _sha1 = output:match "(%w+)"
+    return M.trim(_sha1)
+  else
+    return nil
+  end
+end
+
+function M.sha1(path)
+  if M.executable "sha1sum" then
+    return M.sha1sum(path)
+  end
+
   local ok, f = pcall(io.open, path, "rb")
 
   if ok and f then
@@ -103,18 +118,6 @@ function M.sha1_file(path)
   end
 
   return nil
-end
-
-function M.sha1sum(path)
-  local comando = "sha1sum " .. path
-  local codigo_saida, saida = M.system(comando)
-
-  if codigo_saida == 0 and saida then
-    local hash = saida:match "(%w+)"
-    return hash
-  else
-    return nil
-  end
 end
 
 return M

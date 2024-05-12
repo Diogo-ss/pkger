@@ -27,9 +27,9 @@ function M.debug(text)
   _print(c.green "DEBUG: " .. text)
 end
 
-function M.err(text, e)
+function M.err(text)
   M.error(text)
-  error(e and text or "")
+  error()
 end
 
 setmetatable(M, {

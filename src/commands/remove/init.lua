@@ -20,15 +20,7 @@ function M.clean_pkgs()
 
   fs.each(fs.join(PKGER_DATA, "*"), function(P, mode)
     if mode == "directory" then
-      local remove = true
-
-      fs.each(fs.join(P, "*"), function(p, _)
-        if p then
-          remove = false
-        end
-      end)
-
-      if remove then
+      if fs.is_empty(P) then
         fs.rm(P)
       end
     end
@@ -38,7 +30,10 @@ function M.clean_pkgs()
   })
 end
 
-function M.remove(name, version, is_dependency, force)
+function M.remove(name, version, is_dependency, flags)
+  is_dependency = is_dependency or false
+  flags = flags or {}
+
   local pkg_file = nil
   local dotpkg = lpkg.get_current_pkg(name)
 
@@ -54,7 +49,7 @@ function M.remove(name, version, is_dependency, force)
 
   local dependents = lpkg.list_all_dependent_pkgs(name)
 
-  if not force and not tbl.is_empty(dependents) then
+  if not flags.force and not tbl.is_empty(dependents) then
     local str = ""
 
     for _, dependent in pairs(dependents) do

@@ -282,7 +282,7 @@ function M.get_source_code(pkg)
 
   local url = M.replace(pkg.url, { name = pkg.name, version = pkg.version })
 
-  local file = url:gsub("/$", ""):match ".*/(.*)$"
+  local file = pkg.file_name or url:gsub("/$", ""):match ".*/(.*)$"
 
   log.info(("Downloading %s from %s"):format(file, url))
   local ok, _ = pcall(curl.download, url, file)
@@ -291,29 +291,21 @@ function M.get_source_code(pkg)
     log.err("Error trying to download file: " .. url)
   end
 
-  -- if pkg.version ~= "script" and pkg.version ~= "head" then
-  --   log.info "Inciando chacagem sha1..."
-  --   local sha1 = fn.sha1sum(file)
-  --   if sha1 ~= pkg.hash then
-  --     error("Os sha1 não são iguais. Abortando instalação do " .. pkg.name)
-  --   end
-  -- end
+  if pkg.hash then
+    log.info "Starting a SHA1 check..."
+    local sha1 = fn.sha1(file)
+    if sha1 ~= pkg.hash then
+      log.err "SHA1 of the files is different. It is not safe to continue the installation."
+    end
+  end
 
-  local _ok, _ = fs.extract(file)
+  local _ok, _ = fs.extract(file, pkg.compression_format)
 
   if not _ok then
     log.err("Error trying to extract file: " .. file)
   end
 
   -- fs.rm(dir .. "/" .. file)
-end
-
-function M.remove_link(name, version)
-  if not version then
-    local infos = M.get_current_pkg(name)
-
-    fn.print(infos)
-  end
 end
 
 function M.create_link(pkg)
