@@ -52,7 +52,7 @@ function M.load_pkg(pkg, is_dependency)
 
   if not lpkg.get_current_pkg(pkg.name) then
     lpkg.create_link(pkg)
-    lpkg.gen_pkg_file(pkg)
+    lpkg.gen_pkg_file(pkg, { pinned = false })
   else
     log.info "The package has been installed but the link has not been created. I use a switch to switch between versions."
   end

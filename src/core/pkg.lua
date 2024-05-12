@@ -147,6 +147,31 @@ function M.list_packages()
   return pkgs
 end
 
+function M.list_current_pkgs()
+  local current_pkgs = {}
+
+  fs.each(fs.join(PKGER_DATA, "*"), function(pkg_dir)
+    if fs.is_dir(pkg_dir) then
+      local main_pkg_file = fs.join(pkg_dir, PKGER_MAIN_PKG)
+      if fs.is_file(main_pkg_file) then
+        local ok, main_pkg = pcall(dofile, main_pkg_file)
+        if ok then
+          table.insert(current_pkgs, main_pkg)
+        else
+          log.err("Error loading .pkg: " .. main_pkg_file)
+        end
+      else
+        log.warn("The package does not have a main version defined: " .. pkg_dir)
+      end
+    end
+  end, {
+    delay = true,
+    recurse = false,
+  })
+
+  return current_pkgs
+end
+
 function M.get_pkg_infos(name, version)
   local file = fs.join(PKGER_DATA, name, version, PKGER_PKG_INFOS)
 
@@ -216,7 +241,7 @@ function M.gen_pkger_file(pkg, is_dependency)
   end
 end
 
-function M.gen_pkg_file(pkg)
+function M.gen_pkg_file(pkg, opts)
   local dir = pkg.INSTALLATION_DIRECTORY
   local file = fs.join(PKGER_DATA, pkg.name, PKGER_MAIN_PKG)
 
@@ -226,6 +251,7 @@ function M.gen_pkg_file(pkg)
     created_at = os.date "%Y-%m-%d %H:%M:%S",
     -- aliases = pkg.aliases,
     version = pkg.version,
+    pinned = opts.pinned or false,
     prefix = pkg.prefix,
     file = file,
     dir = dir,

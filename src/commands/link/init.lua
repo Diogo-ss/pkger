@@ -32,7 +32,7 @@ function M.link(name, version, flags)
 
   new_pkg.INSTALLATION_DIRECTORY = new_pkg.dir
 
-  lpkg.gen_pkg_file(new_pkg)
+  lpkg.gen_pkg_file(new_pkg, { pinned = true })
   lpkg.create_link(new_pkg)
 
   log.info(("Complete, %s@%s is available."):format(name, version))
