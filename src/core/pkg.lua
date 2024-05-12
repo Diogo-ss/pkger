@@ -181,32 +181,6 @@ function M.list_available_versions(name)
   end
 
   return versions
-
-  -- local versions = {}
-  -- local dir = fs.join(PKGER_DATA, name)
-
-  -- if not fs.is_dir(dir) then
-  --   return versions
-  -- end
-
-  -- fs.each(fs.join(dir, "*"), function(P)
-  --   if fs.is_dir(P) then
-  --     local file = fs.join(P, PKGER_PKG_INFOS)
-
-  --     if fs.is_file(file) then
-  --       local ok, pkg = pcall(dofile, file)
-
-  --       if ok and pkg.version then
-  --         table.insert(versions, pkg.version)
-  --       end
-  --     end
-  --   end
-  -- end, {
-  --   delay = true,
-  --   recurse = false,
-  -- })
-
-  -- return versions
 end
 
 function M.get_pkg_infos(name, version)
