@@ -133,4 +133,6 @@ M.link = lfs.link
 
 M.is_empty = path.isempty
 
+M.splitext = path.splitext
+
 return M
