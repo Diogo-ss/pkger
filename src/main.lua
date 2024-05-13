@@ -7,18 +7,7 @@ local cache = require "src.core.cache"
 
 config.init()
 
-local command = arg[1]
-local args = { table.unpack(arg, 2) }
-local flags = {}
-
-for i, arg in ipairs(args) do
-  if string.sub(arg, 1, 2) == "--" then
-    flags[string.sub(arg, 3)] = true
-    args[i] = nil
-  end
-end
-
-args = list.unique(args)
+local command, args, flags = fn.args_parser(arg)
 
 -- if flags["no-cache"] then
 --   cache.clear()

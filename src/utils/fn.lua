@@ -1,6 +1,8 @@
 local inspect = require "inspect"
 local which = require "which"
 local sha1 = require "sha1"
+local list = require "src.utils.list"
+local log = require "src.utils.log"
 
 local M = {}
 
@@ -118,6 +120,36 @@ function M.sha1(path)
   end
 
   return nil
+end
+
+function M.args_parser(a)
+  local command = a[1]
+  local args = list.unique { table.unpack(a, 2) }
+  local flags = {}
+
+  for i, _arg in ipairs(args) do
+    if M.startswith(_arg, "--") and _arg:find "=" then
+      local flag, value = _arg:match "^%-%-(%w+)%=(.+)"
+      if flag and value then
+        flags[flag] = value
+        args[i] = nil
+        goto continue
+      end
+
+      log.err("Invalid flag format: " .. _arg)
+      return
+    end
+
+    if M.startswith(_arg, "--") then
+      local flag = string.sub(_arg, 3)
+      flags[flag] = true
+      args[i] = nil
+    end
+
+    ::continue::
+  end
+
+  return command, args, flags
 end
 
 return M

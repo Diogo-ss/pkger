@@ -6,12 +6,16 @@ local fn = require "src.utils.fn"
 local repo = require "src.core.repo"
 local R = require "src.commands.remove"
 local c = require "src.utils.colors"
+local U = require "src.commands.unlink"
 
 local cache = {}
 
 local M = {}
 
 function M.load_pkg(pkg, is_dependency, flags)
+  is_dependency = is_dependency or false
+  flags = flags or {}
+
   local dir = fs.join(PKGER_DATA, pkg.name, pkg.version)
 
   if fs.is_dir(dir) then
@@ -47,7 +51,7 @@ function M.load_pkg(pkg, is_dependency, flags)
 
   lpkg.run_pkg(pkg)
 
-  lpkg.gen_dotinfos_file(pkg, is_dependency)
+  lpkg.gen_dotinfos_file(pkg, { is_dependency = is_dependency })
 
   if flags.upgrade then
     log.info(("Installation completed: %s@%s"):format(pkg.name, pkg.version))
@@ -93,7 +97,7 @@ function M.install(name, version, is_dependency, flags)
 
     -- the package will be marked as non-dependency.
     if infos.is_dependency and not is_dependency then
-      lpkg.gen_dotinfos_file(infos, false)
+      lpkg.gen_dotinfos_file(infos, { is_dependency = false })
       log.warn(("%s has been updated, %s has been added to list of packages."):format(PKGER_DOT_INFOS, c.green(name)))
       return
     end
@@ -103,7 +107,8 @@ function M.install(name, version, is_dependency, flags)
 
   -- TODO: testar o uso durante a instalação
   if has and flags.force then
-    R.remove(pkg.name, pkg.version, is_dependency)
+    U.unlink(name)
+    -- R.remove(pkg.name, pkg.version, is_dependency)
   end
 
   log.info(("Starting installation: %s@%s"):format(pkg.name, pkg.version))

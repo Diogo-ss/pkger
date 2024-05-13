@@ -1,5 +1,4 @@
 local c = require "src.utils.colors"
-local fs = require "src.utils.fs"
 
 local M = {}
 
