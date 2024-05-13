@@ -223,7 +223,9 @@ function M.list_all_dependent_pkgs(name)
   return list
 end
 
-function M.gen_dotinfos_file(pkg, is_dependency)
+function M.gen_dotinfos_file(pkg, flags)
+  flags = flags or {}
+
   local dir = pkg.INSTALLATION_DIRECTORY
   local file = fs.join(PKGER_DATA, pkg.name, pkg.version, PKGER_DOT_INFOS)
 
@@ -235,7 +237,7 @@ function M.gen_dotinfos_file(pkg, is_dependency)
     name = pkg.name,
     version = pkg.version,
     bin = pkg.bin,
-    is_dependency = is_dependency or false,
+    is_dependency = flags.is_dependency or false,
     depends = pkg.depends or {},
     installed_at = os.date "%Y-%m-%d %H:%M:%S",
     script_infos = pkg.script_infos,
@@ -252,7 +254,9 @@ function M.gen_dotinfos_file(pkg, is_dependency)
   end
 end
 
-function M.gen_dotpkg_file(pkg, opts)
+function M.gen_dotpkg_file(pkg, flags)
+  flags = flags or {}
+
   local dir = pkg.INSTALLATION_DIRECTORY
   local file = fs.join(PKGER_DATA, pkg.name, PKGER_DOT_PKG)
 
@@ -262,7 +266,7 @@ function M.gen_dotpkg_file(pkg, opts)
     created_at = os.date "%Y-%m-%d %H:%M:%S",
     -- aliases = pkg.aliases,
     version = pkg.version,
-    pinned = opts.pinned or false,
+    pinned = flags.pinned or false,
     prefix = pkg.prefix,
     file = file,
     dir = dir,

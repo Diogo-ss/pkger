@@ -97,6 +97,7 @@ function M.parser(args, flags)
 
   for _, pkg in pairs(pkgs) do
     local ok, _ = pcall(M.upgrade_pkg, pkg, flags)
+    print(_)
   end
 end
 
