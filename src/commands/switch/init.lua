@@ -26,6 +26,8 @@ function M.switch(name, version)
   U.unlink(name)
   L.link(name, version, { overwrite = true })
 
+  -- TODO: set false in is_dependency
+
   if pkg and pkg.version then
     log.info(("%s: %s --> %s"):format(name, pkg.version, version))
     return

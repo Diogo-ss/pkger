@@ -47,7 +47,7 @@ function M.load_pkg(pkg, is_dependency, flags)
 
   lpkg.run_pkg(pkg)
 
-  lpkg.gen_pkger_file(pkg, is_dependency)
+  lpkg.gen_dotinfos_file(pkg, is_dependency)
 
   if flags.upgrade then
     log.info(("Installation completed: %s@%s"):format(pkg.name, pkg.version))
@@ -60,7 +60,7 @@ function M.load_pkg(pkg, is_dependency, flags)
 
   if not lpkg.get_current_pkg(pkg.name) then
     lpkg.create_link(pkg)
-    lpkg.gen_pkg_file(pkg, { pinned = false })
+    lpkg.gen_dotpkg_file(pkg, { pinned = false })
   else
     log.info "The package has been installed but the link has not been created. I use a switch to switch between versions."
   end
@@ -93,8 +93,8 @@ function M.install(name, version, is_dependency, flags)
 
     -- the package will be marked as non-dependency.
     if infos.is_dependency and not is_dependency then
-      lpkg.gen_pkger_file(infos, false)
-      log.warn(("%s has been updated, %s has been added to list of packages."):format(PKGER_PKG_INFOS, c.green(name)))
+      lpkg.gen_dotinfos_file(infos, false)
+      log.warn(("%s has been updated, %s has been added to list of packages."):format(PKGER_DOT_INFOS, c.green(name)))
       return
     end
 

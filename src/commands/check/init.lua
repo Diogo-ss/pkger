@@ -8,12 +8,12 @@ local M = {}
 local function __check_all_pkg()
   fs.each(fs.join(PKGER_DATA, "*"), function(pkg_dir)
     if fs.is_dir(pkg_dir) then
-      local main_pkg_file = fs.join(pkg_dir, PKGER_MAIN_PKG)
+      local main_pkg_file = fs.join(pkg_dir, PKGER_DOT_PKG)
       if fs.is_file(main_pkg_file) then
         local ok, main_pkg = pcall(dofile, main_pkg_file)
 
         if not ok then
-          log.error(("%s has loading problems: %s"):format(PKGER_MAIN_PKG, main_pkg_file))
+          log.error(("%s has loading problems: %s"):format(PKGER_DOT_PKG, main_pkg_file))
           return
         end
 
@@ -41,13 +41,13 @@ local function __check_all_pkg()
         end
 
         if not fs.is_dir(main_pkg.dir) then
-          log.error(("The directory indicated by %s does not exist: %s"):format(PKGER_MAIN_PKG, main_pkg.dir))
+          log.error(("The directory indicated by %s does not exist: %s"):format(PKGER_DOT_PKG, main_pkg.dir))
           return
         end
 
         if not fs.is_file(main_pkg.prefix) then
           log.error(
-            ("The executable indicated by %s in the file does not exist: %s"):format(PKGER_MAIN_PKG, main_pkg.prefix)
+            ("The executable indicated by %s in the file does not exist: %s"):format(PKGER_DOT_PKG, main_pkg.prefix)
           )
           return
         end
@@ -57,9 +57,9 @@ local function __check_all_pkg()
           return
         end
 
-        local file = fs.join(PKGER_DATA, main_pkg.name, main_pkg.version, PKGER_PKG_INFOS)
+        local file = fs.join(PKGER_DATA, main_pkg.name, main_pkg.version, PKGER_DOT_INFOS)
         if not fs.is_file(file) then
-          log.error(("%s does not exist in the package: %s"):format(PKGER_PKG_INFOS, main_pkg.name))
+          log.error(("%s does not exist in the package: %s"):format(PKGER_DOT_INFOS, main_pkg.name))
           return
         end
       end

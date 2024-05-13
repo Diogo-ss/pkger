@@ -29,7 +29,7 @@ function M.pin(name, flags)
     log.err(("The %s indicated by .pkg does not exist. Do a check using `pkger check --package`"):format(name))
   end
 
-  lpkg.gen_pkg_file(pkg, { pinned = true })
+  lpkg.gen_dotpkg_file(pkg, { pinned = true })
   log.info(("%s was pinned in version %s"):format(name, pkg.version))
 end
 

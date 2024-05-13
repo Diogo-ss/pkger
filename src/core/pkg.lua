@@ -124,7 +124,7 @@ function M.parse(pkgs)
 end
 
 function M.has_package(name, version)
-  local file = fs.join(PKGER_DATA, name, version, PKGER_PKG_INFOS)
+  local file = fs.join(PKGER_DATA, name, version, PKGER_DOT_INFOS)
 
   return fs.is_file(file)
 end
@@ -134,7 +134,7 @@ function M.list_packages()
   local pkgs = {}
 
   fs.each(fs.join(PKGER_DATA, "*"), function(P)
-    if fn.endswith(P, PKGER_PKG_INFOS) then
+    if fn.endswith(P, PKGER_DOT_INFOS) then
       local ok, infos = pcall(dofile, P)
 
       if ok then
@@ -154,7 +154,7 @@ function M.list_primary_pkgs()
 
   fs.each(fs.join(PKGER_DATA, "*"), function(pkg_dir)
     if fs.is_dir(pkg_dir) then
-      local main_pkg_file = fs.join(pkg_dir, PKGER_MAIN_PKG)
+      local main_pkg_file = fs.join(pkg_dir, PKGER_DOT_PKG)
       if fs.is_file(main_pkg_file) then
         local ok, main_pkg = pcall(dofile, main_pkg_file)
         if ok then
@@ -184,7 +184,7 @@ function M.list_available_versions(name)
 end
 
 function M.get_pkg_infos(name, version)
-  local file = fs.join(PKGER_DATA, name, version, PKGER_PKG_INFOS)
+  local file = fs.join(PKGER_DATA, name, version, PKGER_DOT_INFOS)
 
   local ok, infos = pcall(dofile, file)
 
@@ -196,7 +196,7 @@ function M.get_pkg_infos(name, version)
 end
 
 function M.get_current_pkg(name)
-  local file = fs.join(PKGER_DATA, name, PKGER_MAIN_PKG)
+  local file = fs.join(PKGER_DATA, name, PKGER_DOT_PKG)
 
   local ok, infos = pcall(dofile, file)
 
@@ -223,9 +223,9 @@ function M.list_all_dependent_pkgs(name)
   return list
 end
 
-function M.gen_pkger_file(pkg, is_dependency)
+function M.gen_dotinfos_file(pkg, is_dependency)
   local dir = pkg.INSTALLATION_DIRECTORY
-  local file = fs.join(PKGER_DATA, pkg.name, pkg.version, PKGER_PKG_INFOS)
+  local file = fs.join(PKGER_DATA, pkg.name, pkg.version, PKGER_DOT_INFOS)
 
   local infos = {
     pkger_version = PKGER_VERSION,
@@ -248,13 +248,13 @@ function M.gen_pkger_file(pkg, is_dependency)
   local ok, _ = fs.write_file(file, "return " .. fn.inspect(infos))
 
   if not ok then
-    log.err(("Failed to create `%s` file."):format(PKGER_PKG_INFOS))
+    log.err(("Failed to create `%s` file."):format(PKGER_DOT_INFOS))
   end
 end
 
-function M.gen_pkg_file(pkg, opts)
+function M.gen_dotpkg_file(pkg, opts)
   local dir = pkg.INSTALLATION_DIRECTORY
-  local file = fs.join(PKGER_DATA, pkg.name, PKGER_MAIN_PKG)
+  local file = fs.join(PKGER_DATA, pkg.name, PKGER_DOT_PKG)
 
   local infos = {
     pkger_version = PKGER_VERSION,
@@ -272,7 +272,7 @@ function M.gen_pkg_file(pkg, opts)
   local ok, _ = fs.write_file(file, "return " .. fn.inspect(infos))
 
   if not ok then
-    log.err(("Failed to create `%s` file."):format(PKGER_MAIN_PKG))
+    log.err(("Failed to create `%s` file."):format(PKGER_DOT_PKG))
   end
 end
 

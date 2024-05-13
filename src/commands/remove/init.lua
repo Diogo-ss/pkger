@@ -86,7 +86,7 @@ function M.remove(name, version, is_dependency, flags)
     end
 
     if not fs.rm(pkg_file) then
-      log.err("Could not remove " .. PKGER_MAIN_PKG)
+      log.err("Could not remove " .. PKGER_DOT_PKG)
     end
   end
 

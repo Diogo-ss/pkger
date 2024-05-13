@@ -26,7 +26,7 @@ function M.unpin(name, flags)
     log.err(("The %s indicated by .pkg does not exist. Do a check using `pkger check --package`"):format(name))
   end
 
-  lpkg.gen_pkg_file(pkg, { pinned = false })
+  lpkg.gen_dotpkg_file(pkg, { pinned = false })
   log.info(("%s was unpinned. Use `pin` to undo it"):format(name))
 end
 
