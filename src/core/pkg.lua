@@ -30,7 +30,7 @@ local function env()
     PKGER_LIB = PKGER_LIB,
     PKGER_DATA = PKGER_DATA,
     PKGER_CACHE = PKGER_CACHE,
-    PKGER_TMP_DIR = PKGER_TMP_DIR,
+    PKGER_TMP_DIR = PKGER_TMP,
   }
 end
 
