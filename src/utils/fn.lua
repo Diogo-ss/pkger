@@ -143,8 +143,8 @@ function M.args_parser(a)
         goto continue
       end
 
-      log.err("Invalid flag format: " .. _arg)
-      return
+      log.error("Invalid flag format: " .. _arg)
+      M.exit(1)
     end
 
     if M.startswith(_arg, "--") then
