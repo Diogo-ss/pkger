@@ -171,4 +171,24 @@ function M.truthy(val)
   return not M.falsy(val)
 end
 
+function M.is_dir_in_path(dir)
+  local paths = os.getenv "PATH"
+
+  if paths then
+    local path_list = M.split(paths, ":")
+
+    for _, path in pairs(path_list) do
+      if M.trim(path) == (dir .. "/") then
+        return true
+      end
+    end
+  end
+
+  return false
+end
+
+function M.f(s, ...)
+  return string.format(s, ...)
+end
+
 return M

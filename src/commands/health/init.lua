@@ -34,10 +34,16 @@ local programs = {
 function M.check()
   for _, value in pairs(programs) do
     if fn.executable(value.cmd) then
-      log.info(("%s was found."):format(c.green(value.cmd)))
+      log.info(fn.f("%s was found.", c.green(value.cmd)))
     else
-      log[value.type](("%s was not found."):format(c.yellow(value.cmd)))
+      log[value.type](fn.f("%s was not found.", c.yellow(value.cmd)))
     end
+  end
+
+  if not fn.is_dir_in_path(PKGER_BIN) then
+    log.warn(fn.f("bin directory (%s) isn't in PATH.", PKGER_BIN))
+  else
+    log.info(fn.f("bin directory (%s) is in PATH.", PKGER_BIN))
   end
 end
 
