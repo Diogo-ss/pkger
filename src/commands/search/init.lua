@@ -37,7 +37,7 @@ pkgs: {
 function M.find(name)
   local results = {}
 
-  log.info "Loading repos..."
+  log.arrow "Loading repos..."
   local repos = tbl.map(repo.load_all(), function(val)
     if val.search and val.search.url and val.search.type then
       return val.search

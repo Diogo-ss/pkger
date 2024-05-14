@@ -18,7 +18,7 @@ local M = {}
 local cache = {}
 
 function M.upgrade_pkg(pkg, is_dependency, flags)
-  log.info "Loading repos..."
+  log.arrow "Loading repos..."
   cache.repos = cache.repos or repo.load_all()
   cache.current_dir = fs.cwd()
 
@@ -28,7 +28,7 @@ function M.upgrade_pkg(pkg, is_dependency, flags)
   end
 
   if pkg.pinned then
-    log.err(("%s can't be updated because %s is pinned. Use `unpin` to undo."):format(pkg.name, pkg.version))
+    log.err(fn.f("%s can't be updated because %s is pinned. Use `unpin` to undo.", pkg.name, pkg.version))
   end
 
   log.info "Checking for a new version...."
@@ -46,7 +46,7 @@ function M.upgrade_pkg(pkg, is_dependency, flags)
   local ok, _ = pcall(dofile, dotpkg)
 
   if new_version > current_version then
-    log.info(("New version of %s available: %s"):format(new_pkg.name, new_pkg.version))
+    log.info(fn.f("New version of %s available: %s", new_pkg.name, new_pkg.version))
 
     if not ok then
       I.load_pkg(new_pkg, false, { upgrade = true })
@@ -59,7 +59,7 @@ function M.upgrade_pkg(pkg, is_dependency, flags)
     return
   end
 
-  log.info(("The latest version of %s is already installed."):format(new_pkg.name))
+  log.info(fn.f("The latest version of %s is already installed: %s", new_pkg.name, current_version))
 
   -- -- TODO: upgrade dependencie
   -- local ok, _ = I.install(pkg.name, "script", false, { upgrade = true })

@@ -118,7 +118,7 @@ function M.install(name, version, is_dependency, flags)
 end
 
 function M.install_pkgs(pkgs, flags)
-  log.info "Loading repos..."
+  log.arrow "Loading repos..."
   cache.repos = cache.repos or repo.load_all()
   -- remover esse repo padrão e decomentar acima
   -- cache.repos = {
