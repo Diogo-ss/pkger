@@ -39,6 +39,16 @@ function M.init()
   -- load global config
   require "src.core.global"
 
+  local m = fs.mkdir
+  m(PKGER_PREFIX)
+  m(PKGER_BIN)
+  m(PKGER_ETC)
+  m(PKGER_LIB)
+  m(PKGER_DATA)
+  m(PKGER_CACHE)
+  m(PKGER_TMP)
+  m(PKGER_CONFIG)
+
   local ok, result = pcall(M.read_user_config)
 
   if ok then

@@ -1,7 +1,9 @@
-local HOME = os.getenv "HOME"
 local sys = require "src.utils.sys"
+-- local fs = require "src.utils.fs"
 
-PKGER_PREFIX = HOME .. "/.local/pkger"
+local HOME = os.getenv "HOME"
+
+PKGER_PREFIX = HOME .. "/.local/share/pkger"
 PKGER_VERSION = "0.1.0"
 
 PKGER_BIN = PKGER_PREFIX .. "/bin"
@@ -17,5 +19,10 @@ PKGER_REPOS_FILE = PKGER_CONFIG .. "/repos"
 PKGER_CONFIG_FILE = PKGER_CONFIG .. "/config.lua"
 PKGER_DOT_PKG = ".pkg"
 PKGER_DOT_INFOS = ".infos"
+
 -- PKGER_MODULES = PKGER_PREFIX .. "/modules"
 -- PKGER_INSTANCE =
+
+-- if fs.is_file(PKGER_CONFIG_FILE) then
+--   local ok, msg = pcall(dofile, PKGER_CONFIG_FILE)
+-- end
