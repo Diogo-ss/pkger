@@ -70,20 +70,16 @@ function M.get(url)
   easy:perform()
   local code = easy:getinfo(curl.INFO_RESPONSE_CODE)
 
-  if code ~= 200 then
-    error("Request error: " .. code)
-  end
-
   easy:close()
 
-  return table.concat(data)
+  return code, table.concat(data)
 end
 
 function M.get_content(url)
-  local ok, result = pcall(M.get, url)
+  local code, data = M.get(url)
 
-  if ok then
-    return result
+  if code == 200 then
+    return data
   end
 
   return nil
