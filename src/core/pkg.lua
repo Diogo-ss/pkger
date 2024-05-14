@@ -7,6 +7,7 @@ local json = require "dkjson"
 local v = require "semver"
 local fs = require "src.utils.fs"
 local sys = require "src.utils.sys"
+local c = require "src.utils.colors"
 
 local M = {}
 
@@ -369,6 +370,36 @@ function M.create_link(pkg)
   end
 
   -- TODO: usar test
+end
+
+function M.show(pkg)
+  local manteiners = type(pkg.manteiners) == "table" and table.concat(pkg.manteiners, ", ") or pkg.manteiners or "nil"
+  local license = type(pkg.license) == "table" and table.concat(pkg.license, ", ") or pkg.license or "nil"
+  local bar = c.red "───────────────────────────────────────"
+
+  fn.print(fn.f(
+    [[
+%s
+package: %s
+description: %s
+version: %s
+sha1: %s
+license: %s
+manteiners: %s
+homepage: %s
+%s]],
+
+    bar,
+    c.green(pkg.name),
+    c.cyan(pkg.description),
+    c.cyan(pkg.version),
+    c.cyan(pkg.hash or "nil"),
+    c.yellow(manteiners),
+    c.blue(license),
+    c.blue(pkg.homepage),
+    bar
+  -- pkg.script_infos.url
+  ))
 end
 
 return M

@@ -79,9 +79,10 @@ function M.install(name, version, is_dependency, flags)
   local pkg = lpkg.get_pkg(cache.repos, name, version)
 
   if not pkg then
-    log.error(("Could not get a valid script for: %s@%s"):format(name, version))
-    error()
+    log.err(("Could not get a valid script for: %s@%s"):format(name, version))
   end
+
+  lpkg.show(pkg)
 
   local has = lpkg.has_package(pkg.name, pkg.version)
 
