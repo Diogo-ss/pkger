@@ -42,8 +42,8 @@ function M.upgrade_pkg(pkg, is_dependency, flags)
   local current_version = v(pkg.version)
   local new_version = v(new_pkg.version)
 
-  local has = lpkg.has_package(new_pkg.name, new_pkg.version)
-  local ok, _ = pcall(dofile, has)
+  local dotpkg = lpkg.has_package(new_pkg.name, new_pkg.version)
+  local ok, _ = pcall(dofile, dotpkg)
 
   if new_version > current_version then
     log.info(("New version of %s available: %s"):format(new_pkg.name, new_pkg.version))
