@@ -36,7 +36,7 @@ end
 function M.parser(args, flags)
   if tbl.is_empty(args) then
     log.error "No targets specified. Use --help."
-    os.exit(1)
+    fn.exit(1)
   end
 
   for _, name in pairs(args) do

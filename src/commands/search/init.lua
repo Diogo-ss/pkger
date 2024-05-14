@@ -2,6 +2,7 @@ local repo = require "src.core.repo"
 local tbl = require "src.utils.tbl"
 local c = require "src.utils.colors"
 local log = require "src.utils.log"
+local fn = require "src.utils.fn"
 
 local M = {}
 
@@ -45,7 +46,7 @@ function M.find(name)
 
   if tbl.is_empty(repos) then
     log.error "No repository with search support was found."
-    os.exit(1)
+    fn.exit(1)
   end
 
   for _, repo_search in pairs(repos) do
@@ -69,7 +70,7 @@ function M.parser(args)
 
   if tbl.is_empty(results) then
     log.warn("No packages found for: " .. args[1])
-    os.exit(1)
+    fn.exit(1)
   end
 
   M.show(results)

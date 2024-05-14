@@ -137,7 +137,7 @@ function M.install_pkgs(pkgs, flags)
 
   if not cache.repos then
     log.error "No valid repo was found."
-    os.exit(1)
+    fn.exit(1)
   end
 
   for name, version in pairs(pkgs) do
@@ -159,7 +159,7 @@ function M.parser(args, flags)
 
   if tbl.is_empty(pkgs) then
     log.error "No targets specified. Use --help."
-    os.exit(1)
+    fn.exit(1)
   end
 
   -- TODO: load cache

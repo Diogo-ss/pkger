@@ -111,7 +111,7 @@ function M.parse(pkgs)
 
       if pkg == "@" or not (version or name) then
         log.error("Package name is invalid: " .. pkg)
-        os.exit(1)
+        fn.exit(1)
       end
 
       results[name] = version

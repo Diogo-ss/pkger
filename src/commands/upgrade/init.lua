@@ -24,7 +24,7 @@ function M.upgrade_pkg(pkg, is_dependency, flags)
 
   if not cache.repos then
     log.error "No valid repo was found."
-    os.exit(1)
+    fn.exit(1)
   end
 
   if pkg.pinned then

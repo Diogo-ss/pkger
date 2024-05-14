@@ -106,6 +106,12 @@ function M.sha1sum(path)
   end
 end
 
+function M.exit(code, close)
+  -- TODO: remove lockfile
+
+  os.exit(code, close)
+end
+
 function M.sha1(path)
   if M.executable "sha1sum" then
     return M.sha1sum(path)

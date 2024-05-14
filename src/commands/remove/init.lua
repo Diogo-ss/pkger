@@ -2,6 +2,7 @@ local lpkg = require "src.core.pkg"
 local log = require "src.utils.log"
 local tbl = require "src.utils.tbl"
 local fs = require "src.utils.fs"
+local fn = require "src.utils.fn"
 
 local M = {}
 
@@ -111,7 +112,7 @@ function M.parser(args)
 
   if tbl.is_empty(pkgs) then
     log.error "No targets specified. Use --help."
-    os.exit(1)
+    fn.exit(1)
   end
 
   M.remove_pkgs(pkgs)
