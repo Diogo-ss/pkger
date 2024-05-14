@@ -31,8 +31,7 @@ function M.clean_pkgs()
   })
 end
 
-function M.remove(name, version, is_dependency, flags)
-  is_dependency = is_dependency or false
+function M.remove(name, version, flags)
   flags = flags or {}
 
   local pkg_file = nil

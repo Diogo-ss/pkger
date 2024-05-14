@@ -3,7 +3,7 @@ local log = require "src.utils.log"
 
 local M = {}
 
-function M.parser(args, flags)
+function M.prefix(args)
   if #args == 0 then
     log(PKGER_PREFIX)
     return
@@ -19,6 +19,10 @@ function M.parser(args, flags)
 
     log(path)
   end
+end
+
+function M.parser(args, flags)
+  M.prefix(args)
 end
 
 return M

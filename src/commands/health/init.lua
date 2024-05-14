@@ -31,7 +31,7 @@ local programs = {
   },
 }
 
-function M.check()
+function M.health()
   for _, value in pairs(programs) do
     if fn.executable(value.cmd) then
       log.info(fn.f("%s was found.", c.green(value.cmd)))
@@ -48,7 +48,7 @@ function M.check()
 end
 
 function M.parser(args)
-  M.check()
+  M.health()
 end
 
 return M
