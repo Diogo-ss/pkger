@@ -6,7 +6,8 @@ local log = require "src.utils.log"
 local M = {}
 
 function M.create()
-  return fs.write_file(PKGER_LOCKED, "pkger locked")
+  local content = fn.f("PKGER blocked at: %s", os.date "%Y-%m-%d %H:%M:%S")
+  return fs.write_file(PKGER_LOCKED, content)
 end
 
 function M.delete()
