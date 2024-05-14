@@ -26,6 +26,10 @@ function M.debug(text)
   _print(c.green "DEBUG: " .. text)
 end
 
+function M.arrow(text, color)
+  _print(c[color or "blue"] "==> " .. text)
+end
+
 function M.err(text)
   M.error(text)
   error(text)
