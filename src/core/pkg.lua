@@ -375,7 +375,8 @@ end
 function M.show(pkg)
   local manteiners = type(pkg.manteiners) == "table" and table.concat(pkg.manteiners, ", ") or pkg.manteiners or "nil"
   local license = type(pkg.license) == "table" and table.concat(pkg.license, ", ") or pkg.license or "nil"
-  local bar = c.red "───────────────────────────────────────"
+  local bar =
+    c.red "───────────────────────────────────────"
 
   fn.print(fn.f(
     [[
@@ -398,8 +399,18 @@ homepage: %s
     c.blue(license),
     c.blue(pkg.homepage),
     bar
-  -- pkg.script_infos.url
+    -- pkg.script_infos.url
   ))
+end
+
+function M.get_prefix(name)
+  local pkg = M.get_current_pkg(name)
+
+  if pkg then
+    return fs.join(PKGER_BIN, pkg.bin_name)
+  end
+
+  return nil
 end
 
 return M
