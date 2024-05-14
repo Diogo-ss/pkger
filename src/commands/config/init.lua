@@ -21,6 +21,11 @@ function M.config(args, flags)
 end
 
 function M.parser(args, flags)
+  if flags.name then
+    log(_G[flags.name] or "")
+    return
+  end
+
   M.config(args, flags)
 end
 
