@@ -3,6 +3,7 @@ local which = require "which"
 local sha1 = require "sha1"
 local list = require "src.utils.list"
 local log = require "src.utils.log"
+local tbl = require "src.utils.tbl"
 
 local M = {}
 
@@ -72,13 +73,13 @@ function M.json_path(data, path)
 end
 
 function M.split(str, sep)
-  local tbl = {}
+  local _tbl = {}
   sep = sep == nil and "%s" or sep
 
   for s in string.gmatch(str, "([^" .. sep .. "]+)") do
-    table.insert(tbl, s)
+    table.insert(_tbl, s)
   end
-  return tbl
+  return _tbl
 end
 
 function M.startswith(str, s)
@@ -156,6 +157,18 @@ function M.args_parser(a)
   end
 
   return command, args, flags
+end
+
+function M.falsy(val)
+  if type(val) == "table" then
+    return tbl.is_empty(val)
+  end
+
+  return M.is_empty(val)
+end
+
+function M.truthy(val)
+  return not M.falsy(val)
 end
 
 return M
