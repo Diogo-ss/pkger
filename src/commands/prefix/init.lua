@@ -1,5 +1,6 @@
 local lpkg = require "src.core.pkg"
 local log = require "src.utils.log"
+local fn = require "src.utils.fn"
 
 local M = {}
 
@@ -9,15 +10,31 @@ function M.parser(args, flags)
     return
   end
 
-  for _, name in pairs(args) do
-    local path = lpkg.get_prefix(name)
+  local pkgs = lpkg.parse(args)
 
-    if not path then
-      log.error(name .. " isn't installed.")
+  for name, version in pairs(pkgs) do
+    local prefix = nil
+
+    if version == "script" then
+      version = nil
+    end
+    prefix = lpkg.get_prefix(name)
+
+    if version ~= "script" then
+      local pkg = lpkg.get_pkg_infos(name, version)
+
+      if pkg then
+        prefix = pkg.prefix
+      end
+    end
+
+    if not prefix then
+      version = version and "@" .. version or ""
+      log.error(fn.f("%s%s isn't installed.", name, version))
       return
     end
 
-    log(path)
+    log(prefix)
   end
 end
 
