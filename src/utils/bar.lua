@@ -31,7 +31,7 @@ function bar:render()
   local empty_length = self.length - filled_length
 
   local bar_str = format(
-    "%s [%s%s] %.2f%%",
+    "%s [%s%s] %.2f%% ",
     self.info,
     rep(self.filled_char, filled_length),
     rep(self.empty_char, empty_length),

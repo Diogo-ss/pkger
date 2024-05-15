@@ -1,17 +1,15 @@
 local curl = require "lcurl"
 local bar = require "src.utils.bar"
 local c = require "src.utils.colors"
+local log = require "src.utils.log"
 
 local M = {}
-
--- local csize = M.easy:getinfo(curl.INFO_SIZE_DOWNLOAD)
--- local total_size = M.easy:getinfo(curl.INFO_CONTENT_LENGTH_DOWNLOAD)
 
 function M.download(url, output_file)
   local ok, f = pcall(io.open, output_file, "wb")
 
-  if not (ok or f) then
-    error("Error trying to open: " .. output_file)
+  if not ok or not f then
+    log.err("Error trying to open: " .. output_file)
   end
 
   local dbar = bar:new(30)
@@ -21,11 +19,14 @@ function M.download(url, output_file)
     return #str
   end
 
-  local function progress_function(dltotal, dlnow)
-    local progress = dlnow / dltotal * 100
+  local function progress_function(total, downloaded)
+    local downloaded_mb = downloaded / 1024 / 1024
+    local total_mb = total / 1024 / 1024
 
-    if progress >= 0 then
-      dbar:update("Download:", progress)
+    if total > 0 then
+      local progress = downloaded / total * 100
+      local info = string.format("Download: %.2fMB/%.2fMB", downloaded_mb, total_mb)
+      dbar:update(info, progress)
     end
   end
 
@@ -45,7 +46,7 @@ function M.download(url, output_file)
   local code = easy:getinfo(curl.INFO_RESPONSE_CODE)
 
   if code ~= 200 then
-    error("Request error: " .. code)
+    log.err(string.format("Request error (%s): %s", url, code))
   end
 
   f:close()
