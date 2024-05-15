@@ -1,54 +1,53 @@
-local function clearLineAndPrint(text)
-  io.write "\027[2K\r" -- Limpa a linha e retorna ao início
-  io.write(text)
+local rep = string.rep
+local format = string.format
+
+local bar = {}
+
+function bar:new(length)
+  return setmetatable({
+    length = length or 30,
+    filled_char = "■",
+    empty_char = "-",
+    progress = 0,
+    done = false,
+    max = 100,
+    info = "",
+  }, { __index = self })
+end
+
+function bar:print(...)
+  io.write("\027[2K\r", ...)
   io.flush()
 end
 
-local function moveCursorToNextLine()
-  io.write "\n" -- Move o cursor para a próxima linha
-  io.flush()
+function bar:update(info, progress)
+  self.info = info or self.info
+  self.progress = progress or self.progress
+  self:render()
 end
 
-local function create(length)
-  local bar = {
-    length = length,
-    filledChar = "■",
-    emptyChar = "-",
-    percentageWidth = 6,
-    percentageSymbol = "%",
-    currentProgress = 0,
-  }
+function bar:render()
+  local filled_length = math.floor(self.length * self.progress / 100)
+  local empty_length = self.length - filled_length
 
-  function bar:update(info, progress)
-    self.currentProgress = math.max(0, math.min(1, progress))
-    self:render(info)
+  local bar_str = format(
+    "%s [%s%s] %.2f%%",
+    self.info,
+    rep(self.filled_char, filled_length),
+    rep(self.empty_char, empty_length),
+    self.progress
+  )
+
+  if self.done then
+    return
   end
 
-  function bar:print(text)
-    clearLineAndPrint(text)
-    moveCursorToNextLine()
-    self:render()
+  if self.progress == self.max then
+    bar_str = bar_str .. "\n"
+    self.done = true
   end
 
-  function bar:render(info)
-    local filledLength = math.floor(self.currentProgress * self.length)
-    local emptyLength = self.length - filledLength
-
-    local progressBarStr = "["
-      .. string.rep(self.filledChar, filledLength)
-      .. string.rep(self.emptyChar, emptyLength)
-      .. "] "
-      .. string.format("%.2f", self.currentProgress * 100)
-      .. self.percentageSymbol
-
-    if info then
-      progressBarStr = info .. " " .. progressBarStr
-    end
-
-    clearLineAndPrint(progressBarStr)
-  end
-
-  return bar
+  self:print(bar_str)
 end
 
-return { create = create }
+return bar

@@ -1,5 +1,6 @@
 local curl = require "lcurl"
 local bar = require "src.utils.bar"
+local c = require "src.utils.colors"
 
 local M = {}
 
@@ -13,7 +14,7 @@ function M.download(url, output_file)
     error("Error trying to open: " .. output_file)
   end
 
-  local dbar = bar.create(30)
+  local dbar = bar:new(30)
 
   local function write_function(str)
     f:write(str)
@@ -21,10 +22,10 @@ function M.download(url, output_file)
   end
 
   local function progress_function(dltotal, dlnow)
-    local progress = math.floor(dlnow / dltotal * 10000) / 100
+    local progress = dlnow / dltotal * 100
 
     if progress >= 0 then
-      dbar:update("Download: ", progress / 100)
+      dbar:update("Download:", progress)
     end
   end
 
