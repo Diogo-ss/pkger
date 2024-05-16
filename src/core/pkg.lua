@@ -413,4 +413,14 @@ homepage: %s
   ))
 end
 
+function M.get_prefix(name)
+  local pkg = M.get_current_pkg(name)
+
+  if pkg then
+    return pkg.prefix
+  end
+
+  return nil
+end
+
 return M

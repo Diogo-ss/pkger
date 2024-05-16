@@ -3,7 +3,7 @@ local log = require "src.utils.log"
 
 local M = {}
 
-function M.prefix(args)
+function M.parser(args, flags)
   if #args == 0 then
     log(PKGER_PREFIX)
     return
@@ -21,17 +21,12 @@ function M.prefix(args)
     end
 
     if not pkg then
-      version = version ~= PKGER_SCRIPT_VERSION and "@" .. version or ""
-      log.error(name .. version .. " isn't installed.")
+      log.error(name .. " isn't installed.")
       return
     end
 
     log(pkg.prefix)
   end
-end
-
-function M.parser(args, flags)
-  M.prefix(args)
 end
 
 return M
