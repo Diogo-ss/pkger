@@ -9,15 +9,24 @@ function M.prefix(args)
     return
   end
 
-  for _, name in pairs(args) do
-    local path = lpkg.get_prefix(name)
+  local pkgs = lpkg.parse(args)
 
-    if not path then
-      log.error(name .. " isn't installed.")
+  for name, version in pairs(pkgs) do
+    local pkg = nil
+
+    if version == PKGER_SCRIPT_VERSION then
+      pkg = lpkg.get_current_pkg(name)
+    else
+      pkg = lpkg.get_pkg_infos(name, version)
+    end
+
+    if not pkg then
+      version = version ~= "script" and "@" .. version or ""
+      log.error(name .. version .. " isn't installed.")
       return
     end
 
-    log(path)
+    log(pkg.prefix)
   end
 end
 
