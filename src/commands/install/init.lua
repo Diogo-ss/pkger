@@ -47,7 +47,7 @@ function M.load_pkg(pkg, is_dependency, flags)
   -- pkg.INSTALLATION_DIRECTORY = dir
   cache.installation_directory = dir
 
-  lpkg.get_source_code(pkg)
+  pkg = lpkg.get_source_code(pkg)
 
   lpkg.run_pkg(pkg)
 
@@ -61,6 +61,14 @@ function M.load_pkg(pkg, is_dependency, flags)
   -- TODO: adiconar caso onde é flag de upgrade e é uma depencia
   -- if flags.upgrade and is_dependency then
   -- end
+
+  if not pkg.keep_source_dir and fs.is_dir(pkg.source_dir) then
+    fs.rm_dir(pkg.source_dir)
+  end
+
+  if not pkg.keep_source_file and fs.is_file(pkg.source_file) then
+    fs.rm(pkg.source_file)
+  end
 
   if not lpkg.get_current_pkg(pkg.name) then
     lpkg.create_links(pkg)
@@ -144,6 +152,10 @@ function M.install_pkgs(pkgs, flags)
   for name, version in pairs(pkgs) do
     local ok, err = pcall(M.install, name, version, false, flags)
 
+    -- if err then
+    --   log.arrow(err, "red")
+    -- end
+
     if not ok then
       log.error(("Installation not completed: %s@%s"):format(name, version))
       local dir = cache.installation_directory
@@ -155,8 +167,32 @@ function M.install_pkgs(pkgs, flags)
   end
 end
 
+function M.file(flags)
+  local file = fs.is_file(flags.file)
+
+  if not file then
+    log.error "não é arquivo"
+    return
+  end
+
+  local ok, content = fs.read_file(fs.is_file(flags.file))
+
+  local pkg = lpkg.load_script(content)
+
+  if not pkg then
+    log.error "não achou pacote"
+  end
+
+  M.load_pkg(pkg, false, {})
+end
+
 function M.parser(args, flags)
   local pkgs = lpkg.parse(args)
+
+  if flags.file then
+    M.file(flags)
+    return
+  end
 
   if tbl.is_empty(pkgs) then
     log.error "No targets specified. Use --help."

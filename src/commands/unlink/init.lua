@@ -22,7 +22,7 @@ function M.unlink(name)
     log.err("It was not possible to remove the symbolic link of bin: " .. bin)
   end
 
-  local opt = fs.join(PKGER_OPT, "nvim")
+  local opt = fs.join(PKGER_OPT, current_pkg.bin_name)
 
   if fs.is_dir(opt) and not fs.rm_folder_link(opt) then
     log.err("It was not possible to remove the symbolic link of opt: " .. opt)

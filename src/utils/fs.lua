@@ -139,4 +139,19 @@ M.rm_folder_link = function(p)
   return os.execute("rm " .. p)
 end
 
+M.attributes = lfs.attributes
+
+function M._list_all(p)
+  local all = {}
+
+  path.each(path.join(p, "*"), function(P)
+    table.insert(all, P)
+  end, {
+    delay = true,
+    recurse = false,
+  })
+
+  return all
+end
+
 return M

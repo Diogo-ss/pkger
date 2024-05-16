@@ -13,7 +13,7 @@ local M = {}
 
 local function env()
   return {
-    system = fn.system,
+    system = fn.safe_system,
     shell_code = fn.shell_code,
     get = curl.download,
     rm = fs.rm,
@@ -22,6 +22,7 @@ local function env()
     cd = fs.cd,
     log = log,
     cwd = fs.cwd,
+    join = fs.join,
     extract = fs.extract,
     INSTALLATION_ENVIRONMENT = true,
     PKGER_PREFIX = PKGER_PREFIX,
@@ -47,6 +48,12 @@ function M.checkver(url, jsonpath, regex)
   if jsonpath then
     local data = json.decode(contents)
     text = data[jsonpath]
+
+    -- if type(text) == "table" then
+    --   text = table.concat(text, "")
+    -- end
+  else
+    text = contents
   end
 
   text = string.match(text, regex)
@@ -73,6 +80,9 @@ function M.load_script(script)
     error "It was not possible to determine the version of the package."
   end
 
+  pkg.bin_name = pkg.bin:match ".+/([^/]+)$" or pkg.bin
+  pkg.INSTALLATION_DIRECTORY = fs.join(PKGER_PKGS, pkg.name, pkg.version)
+
   return pkg
 end
 
@@ -88,8 +98,6 @@ function M.get_pkg(repos, name, version)
     local ok, pkg = pcall(M.load_script, content)
 
     if ok then
-      pkg.bin_name = pkg.bin:match ".+/([^/]+)$" or pkg.bin
-      pkg.INSTALLATION_DIRECTORY = fs.join(PKGER_PKGS, pkg.name, pkg.version)
       pkg.script_infos = {
         url = url,
         content = content,
@@ -266,6 +274,7 @@ function M.gen_dotpkg_file(pkg, flags)
   local bin_name = pkg.bin:match ".+/([^/]+)$" or pkg.bin
 
   local infos = {
+    INSTALLATION_DIRECTORY = dir,
     pkger_version = PKGER_VERSION,
     name = pkg.name,
     created_at = os.date "%Y-%m-%d %H:%M:%S",
@@ -309,11 +318,10 @@ function M.run_pkg(pkg)
     if type(func) ~= "function" then
       log.err(n .. " não é do tipo função.")
     end
-
-    local ok, _ = pcall(func)
+    local ok, msg = pcall(func)
 
     if not ok then
-      log.err(n .. " cannot be executed.")
+      log.err(n .. " cannot be executed: " .. msg)
     end
 
     ::continue::
@@ -346,10 +354,32 @@ function M.get_source_code(pkg)
 
   local _ok, _ = fs.extract(file, pkg.compression_format)
 
+  local soure_file = fs.is_file(file)
+
+  if soure_file then
+    pkg.source_file = soure_file
+  end
+
   if not _ok then
     log.err("Error trying to extract file: " .. file)
   end
 
+  -- remove file
+  fs.rm(file)
+
+  local dirs = fs._list_all(pkg.INSTALLATION_DIRECTORY)
+
+  if #dirs == 1 then
+    local i = next(dirs)
+    local source_dir = fs.join(pkg.INSTALLATION_DIRECTORY, dirs[i])
+
+    if fs.attributes(source_dir, "mode") == "directory" then
+      fs.cd(source_dir)
+      pkg.source_dir = source_dir
+    end
+  end
+
+  return pkg
   -- fs.rm(dir .. "/" .. file)
 end
 

@@ -9,7 +9,9 @@ local M = {}
 
 local shell_code = 0
 
-function M.system(cmd)
+function M.system(cmd, flags)
+  flags = flags or { debug = true }
+
   local str = type(cmd) == "table" and table.concat(cmd, " ") or cmd
   local ok, handle = pcall(io.popen, str)
 
@@ -19,13 +21,15 @@ function M.system(cmd)
 
   local output_lines = {}
 
-  while true do
-    local line = handle:read "*l"
-    if not line then
-      break
+  if flags.debug then
+    while true do
+      local line = handle:read "*l"
+      if not line then
+        break
+      end
+      table.insert(output_lines, line)
+      print(line)
     end
-    table.insert(output_lines, line)
-    print(line)
   end
 
   local output = handle:read "*a"
@@ -34,6 +38,16 @@ function M.system(cmd)
   shell_code = exit_code[3]
 
   return exit_code[3], output
+end
+
+M.safe_system = function(cmd)
+  local code, output = M.system(cmd)
+
+  if code ~= 0 then
+    log.err "erro com função"
+  end
+
+  return code, output
 end
 
 function M.executable(command)
