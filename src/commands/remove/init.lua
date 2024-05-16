@@ -12,7 +12,7 @@ local function _version_suffix(version)
 end
 
 function M.remove(name, version, flags)
-  local pkg = nil
+  local pkg
 
   if not version or version == PKGER_SCRIPT_VERSION then
     pkg = lpkg.get_current_pkg(name)
@@ -48,8 +48,8 @@ function M.remove(name, version, flags)
     U.unlink(name)
   end
 
-  if not fs.rm_dir(dir) == nil then
-    log.err(fn.f("Package could not be removed: %s@%s", name, pgk.version))
+  if fs.rm_dir(dir) ~= nil then
+    log.err(fn.f("Package could not be removed: %s@%s", name, pkg.version))
   end
 
   log.info(fn.f("package has been removed: %s@%s", name, pkg.version))

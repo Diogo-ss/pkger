@@ -47,7 +47,7 @@ function M.health()
   end
 end
 
-function M.parser(args)
+function M.parser(_)
   M.health()
 end
 

@@ -17,7 +17,7 @@ function M.extend(...)
   local merged_list = {}
 
   for _, list in pairs { ... } do
-    for k, v in pairs(list) do
+    for _, v in pairs(list) do
       table.insert(merged_list, v)
     end
   end

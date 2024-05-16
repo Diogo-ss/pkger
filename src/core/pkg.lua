@@ -4,7 +4,6 @@ local tbl = require "src.utils.tbl"
 local sandbox = require "src.utils.sandbox"
 local log = require "src.utils.log"
 local json = require "dkjson"
-local v = require "semver"
 local fs = require "src.utils.fs"
 local sys = require "src.utils.sys"
 local c = require "src.utils.colors"
@@ -48,7 +47,7 @@ function M.checkver(url, jsonpath, regex)
     return nil
   end
 
-  local text = ""
+  local text
 
   if jsonpath then
     local data = json.decode(contents)
@@ -337,7 +336,7 @@ function M.run_pkg(pkg)
 end
 
 function M.get_source_code(pkg)
-  local dir = pkg.INSTALLATION_DIRECTORY
+  -- local dir = pkg.INSTALLATION_DIRECTORY
 
   -- TODO: add git suporte
 
@@ -452,7 +451,7 @@ homepage: %s
 end
 
 function M.prefix(name, version)
-  local pkg = nil
+  local pkg
 
   if not version or version == PKGER_SCRIPT_VERSION then
     pkg = M.get_current_pkg(name)

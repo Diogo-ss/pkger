@@ -1,8 +1,5 @@
 local fn = require "src.utils.fn"
 local fs = require "src.utils.fs"
-local tbl = require "src.utils.tbl"
-local log = require "src.utils.log"
-local config = require "src.core.config"
 
 local M = {}
 local limit = 3600
@@ -18,7 +15,7 @@ function M.save(name, cache)
   return fs.write_file(file, text)
 end
 
-function M.load(name, flags)
+function M.load(name, _)
   local file = fs.join(PKGER_CACHE, name)
   local ok, C = pcall(dofile, file)
 

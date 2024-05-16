@@ -1,5 +1,4 @@
 local fn = require "src.utils.fn"
-local tbl = require "src.utils.tbl"
 local fs = require "src.utils.fs"
 local log = require "src.utils.log"
 

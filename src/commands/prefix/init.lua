@@ -3,6 +3,7 @@ local log = require "src.utils.log"
 
 local M = {}
 
+--luacheck: ignore flags
 function M.parser(args, flags)
   if #args == 0 then
     log(PKGER_PREFIX)

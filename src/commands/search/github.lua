@@ -1,8 +1,6 @@
 local curl = require "src.utils.curl"
 local json = require "dkjson"
-local fn = require "src.utils.fn"
 local list = require "src.utils.list"
-local c = require "src.utils.colors"
 local log = require "src.utils.log"
 local tbl = require "src.utils.tbl"
 

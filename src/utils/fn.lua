@@ -9,7 +9,7 @@ local M = {}
 
 local shell_code = 0
 
-function M.system(cmd, flags)
+function M.system(cmd)
   local str = type(cmd) == "table" and table.concat(cmd, " ") or cmd
   local ok, handle = pcall(io.popen, str)
 

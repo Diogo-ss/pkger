@@ -2,7 +2,6 @@ local repo = require "src.core.repo"
 local tbl = require "src.utils.tbl"
 local c = require "src.utils.colors"
 local log = require "src.utils.log"
-local fn = require "src.utils.fn"
 
 local M = {}
 
@@ -23,17 +22,6 @@ local function _find(url, engine_type, name)
   return ok and engine.search(url, name) or nil
 end
 
---[[
-return a table
-{
-repo: string
-engine: string
-pkgs: {
-  name: { "v1", "v2" }
-  name2: { "v1", "v2" }
-}
-}
---]]
 function M.find(name)
   local results = {}
 
@@ -59,6 +47,7 @@ function M.find(name)
   return results
 end
 
+--luacheck: ignore flags
 function M.search(name, flags)
   local results = M.find(name)
 
@@ -76,7 +65,11 @@ function M.parser(args, flags)
     return
   end
 
-  local ok, _ = pcall(M.search, args[1], flags)
+  local _, msg = pcall(M.search, args[1], flags)
+
+  if msg and PKGER_DEBUG_MODE then
+    log(msg)
+  end
 end
 
 return M

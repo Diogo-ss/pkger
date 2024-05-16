@@ -1,5 +1,4 @@
 local sys = require "src.utils.sys"
--- local fs = require "src.utils.fs"
 
 local HOME = os.getenv "HOME"
 
@@ -23,8 +22,7 @@ PKGER_DOT_INFOS = ".infos"
 PKGER_SCRIPT_VERSION = "script"
 PKGER_DEBUG_MODE = false
 
--- PKGER_MODULES = PKGER_PREFIX .. "/modules"
--- PKGER_INSTANCE =
+-- PKGER_INSTANCE_ID =
 
 -- if fs.is_file(PKGER_CONFIG_FILE) then
 --   local ok, msg = pcall(dofile, PKGER_CONFIG_FILE)

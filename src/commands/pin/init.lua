@@ -1,15 +1,11 @@
-local fs = require "src.utils.fs"
 local log = require "src.utils.log"
 local tbl = require "src.utils.tbl"
 local lpkg = require "src.core.pkg"
 local fn = require "src.utils.fn"
-local repo = require "src.core.repo"
-local c = require "src.utils.colors"
-
--- pacotes pinados são ignorados no upgrade
 
 local M = {}
 
+--luacheck: ignore flags
 function M.pin(name, flags)
   local infos = lpkg.get_current_pkg(name)
 
@@ -40,7 +36,11 @@ function M.parser(args, flags)
   end
 
   for _, name in pairs(args) do
-    local ok, _ = pcall(M.pin, name, flags)
+    local _, msg = pcall(M.pin, name, flags)
+
+    if msg and PKGER_DEBUG_MODE then
+      log(msg)
+    end
   end
 end
 

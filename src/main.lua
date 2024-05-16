@@ -1,9 +1,7 @@
 local config = require "src.core.config"
 local log = require "src.utils.log"
 local c = require "src.utils.colors"
-local list = require "src.utils.list"
 local fn = require "src.utils.fn"
-local cache = require "src.core.cache"
 
 config.init()
 
@@ -35,3 +33,7 @@ if ok and type(cmd) == "table" and type(cmd.parser) == "function" then
 end
 
 log.warn(("Invalid subcommand. Use '%s' for usage information."):format(c.green "pkger --help"))
+
+if cmd and PKGER_DEBUG_MODE then
+  log(cmd)
+end

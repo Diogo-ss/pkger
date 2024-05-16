@@ -1,12 +1,11 @@
-local fs = require "src.utils.fs"
 local log = require "src.utils.log"
 local tbl = require "src.utils.tbl"
 local lpkg = require "src.core.pkg"
 local fn = require "src.utils.fn"
-local repo = require "src.core.repo"
 
 local M = {}
 
+--luacheck: ignore flags
 function M.unpin(name, flags)
   local infos = lpkg.get_current_pkg(name)
 
@@ -37,9 +36,9 @@ function M.parser(args, flags)
   end
 
   for _, name in pairs(args) do
-    local ok, msg = pcall(M.unpin, name, flags)
+    local _, msg = pcall(M.unpin, name, flags)
 
-    if PKGER_DEBUG_MODE then
+    if msg and PKGER_DEBUG_MODE then
       log(msg)
     end
   end

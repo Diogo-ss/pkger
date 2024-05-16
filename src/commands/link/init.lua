@@ -1,8 +1,6 @@
 local c = require "src.utils.colors"
 local log = require "src.utils.log"
 local lpkg = require "src.core.pkg"
-local fn = require "src.utils.fn"
-local fs = require "src.utils.fs"
 local L = require "src.commands.unlink"
 
 local M = {}
@@ -50,7 +48,11 @@ function M.parser(args, flags)
   local name = next(pkg)
   local version = pkg[name]
 
-  local ok, _ = pcall(M.link, name, version, flags)
+  local _, msg = pcall(M.link, name, version, flags)
+
+  if msg and PKGER_DEBUG_MODE then
+    log(msg)
+  end
 end
 
 return M

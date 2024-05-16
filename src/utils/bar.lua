@@ -15,6 +15,7 @@ function bar:new(length)
   }, { __index = self })
 end
 
+--luacheck: ignore 212/self
 function bar:print(...)
   io.write("\027[2K\r", ...)
   io.flush()

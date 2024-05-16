@@ -9,7 +9,7 @@ local function _log(key, value)
   log(c.green(key) .. ": " .. value)
 end
 
-function M.config(args, flags)
+function M.config()
   for key, value in pairs(_G) do
     if type(value) == "string" and fn.startswith(key, "PKGER") then
       _log(key, value)
@@ -20,13 +20,13 @@ function M.config(args, flags)
   _log("ARCH", sys.arch)
 end
 
-function M.parser(args, flags)
+function M.parser(_, flags)
   if flags.name then
     log(_G[flags.name] or "")
     return
   end
 
-  M.config(args, flags)
+  M.config()
 end
 
 return M

@@ -1,7 +1,5 @@
 local log = require "src.utils.log"
 local lpkg = require "src.core.pkg"
-local c = require "src.utils.colors"
-local search = require "src.commands.search"
 local fn = require "src.utils.fn"
 local tbl = require "src.utils.tbl"
 local repo = require "src.core.repo"
@@ -9,15 +7,14 @@ local fs = require "src.utils.fs"
 local v = require "semver"
 
 local S = require "src.commands.switch"
-local L = require "src.commands.link"
 local I = require "src.commands.install"
-local U = require "src.commands.unlink"
 
 local M = {}
 
 local cache = {}
 
-function M.upgrade_pkg(pkg, is_dependency, flags)
+--luacheck: ignore flags
+function M.upgrade_pkg(pkg, flags)
   log.arrow "Loading repos..."
   cache.repos = cache.repos or repo.load_all()
   cache.current_dir = fs.cwd()
@@ -96,8 +93,8 @@ function M.parser(args, flags)
   end
 
   for _, pkg in pairs(pkgs) do
-    local ok, msg = pcall(M.upgrade_pkg, pkg, flags)
-    if PKGER_DEBUG_MODE then
+    local _, msg = pcall(M.upgrade_pkg, pkg, flags)
+    if msg and PKGER_DEBUG_MODE then
       log(msg)
     end
   end

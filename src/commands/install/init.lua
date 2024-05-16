@@ -5,9 +5,9 @@ local lpkg = require "src.core.pkg"
 local fn = require "src.utils.fn"
 local repo = require "src.core.repo"
 local c = require "src.utils.colors"
+local curl = require "src.utils.curl"
 
 local R = require "src.commands.remove"
-local U = require "src.commands.unlink"
 
 local cache = {}
 
@@ -106,12 +106,13 @@ function M.load_pkg(pkg, is_dependency, flags)
     lpkg.create_links(pkg)
     lpkg.gen_dotpkg_file(pkg, { pinned = false })
   else
-    log.info "The package has been installed but the link has not been created. I use a switch to switch between versions."
+    log.info "Package installed. Another version is set as primary. Use `switch` to change the version."
   end
 
   log.info "Installation completed."
 end
 
+--luacheck: ignore is_dependency
 function M.install(name, version, is_dependency, flags)
   if not cache.repos then
     log.arrow "Loading repos..."
@@ -127,7 +128,7 @@ function M.install(name, version, is_dependency, flags)
 
   local ok, msg = pcall(_install, name, version, false, flags or {})
 
-  if PKGER_DEBUG_MODE then
+  if msg and PKGER_DEBUG_MODE then
     log(msg)
   end
 
@@ -145,30 +146,63 @@ function M.install(name, version, is_dependency, flags)
 end
 
 -- not safe to use
-function M.file(flags)
-  local file = fs.is_file(flags.file)
-
-  if not file then
-    log.error "não é arquivo"
-    return
-  end
-
-  local ok, content = fs.read_file(fs.is_file(flags.file))
+function M.file(content)
+  log.warn "This command is intended for development, it may cause packages to break."
 
   local pkg = lpkg.load_script(content)
 
   if not pkg then
-    log.error "não achou pacote"
+    log.error "Could not load the package."
+    return
   end
 
-  M.load_pkg(pkg, false, {})
+  local _ok, msg = pcall(M.load_pkg, pkg, false, {})
+
+  if not _ok then
+    log.error(("Installation not completed: %s@%s"):format(pkg.name, pkg.version))
+    return
+  end
+
+  if msg and PKGER_DEBUG_MODE then
+    log(msg)
+  end
 end
 
 function M.parser(args, flags)
   local pkgs = lpkg.parse(args)
 
+  if flags.file and flags.url then
+    log.error "It is not possible to use `file` and `url` flags in the same command."
+    fn.exit(1)
+  end
+
   if flags.file then
-    M.file(flags)
+    local file = fs.is_file(flags.file)
+
+    if not file then
+      log.error("non-existent file: " .. file)
+      return
+    end
+
+    local ok, content = fs.read_file(fs.is_file(flags.file))
+
+    if not ok then
+      log.error("Could not retrieve the contents of the file: " .. flags.file)
+      return
+    end
+
+    M.file(content)
+    return
+  end
+
+  if flags.url then
+    local content = curl.get_content(flags.url)
+    if not content then
+      log.error("Could not retrieve the contents of the url: " .. flags.url)
+      return
+    end
+
+    M.file(content)
     return
   end
 
@@ -178,7 +212,11 @@ function M.parser(args, flags)
   end
 
   for name, version in pairs(pkgs) do
-    local ok, _ = pcall(M.install, name, version, false, flags or {})
+    local _, msg = pcall(M.install, name, version, false, flags or {})
+
+    if msg and PKGER_DEBUG_MODE then
+      log(msg)
+    end
   end
 end
 

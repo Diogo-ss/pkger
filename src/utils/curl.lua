@@ -1,6 +1,5 @@
 local curl = require "lcurl"
 local bar = require "src.utils.bar"
-local c = require "src.utils.colors"
 local log = require "src.utils.log"
 
 local M = {}
@@ -15,6 +14,11 @@ function M.download(url, output_file)
   local dbar = bar:new(30)
 
   local function write_function(str)
+    if not f then
+      log.err("The file is not accessible: " .. output_file)
+    end
+
+    ---@diagnostic disable-next-line: need-check-nil
     f:write(str)
     return #str
   end

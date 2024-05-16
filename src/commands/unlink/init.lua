@@ -2,7 +2,6 @@ local c = require "src.utils.colors"
 local log = require "src.utils.log"
 local lpkg = require "src.core.pkg"
 local fs = require "src.utils.fs"
-local fn = require "src.utils.fn"
 
 local M = {}
 
@@ -38,9 +37,9 @@ function M.parser(args)
     return
   end
 
-  local ok, msg = pcall(M.unlink, args[1])
+  local _, msg = pcall(M.unlink, args[1])
 
-  if PKGER_DEBUG_MODE then
+  if msg and PKGER_DEBUG_MODE then
     log(msg)
   end
 end
