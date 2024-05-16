@@ -16,7 +16,7 @@ function M.load_pkg(pkg, is_dependency, flags)
   is_dependency = is_dependency or false
   flags = flags or {}
 
-  local dir = fs.join(PKGER_DATA, pkg.name, pkg.version)
+  local dir = fs.join(PKGER_PKGS, pkg.name, pkg.version)
 
   if fs.is_dir(dir) then
     fs.rm_dir(dir)
@@ -43,8 +43,8 @@ function M.load_pkg(pkg, is_dependency, flags)
   end
 
   fs.cd(dir)
-  pkg.prefix = fs.join(dir, pkg.bin)
-  pkg.INSTALLATION_DIRECTORY = dir
+  -- pkg.prefix = fs.join(dir, pkg.bin)
+  -- pkg.INSTALLATION_DIRECTORY = dir
   cache.installation_directory = dir
 
   lpkg.get_source_code(pkg)
@@ -63,7 +63,7 @@ function M.load_pkg(pkg, is_dependency, flags)
   -- end
 
   if not lpkg.get_current_pkg(pkg.name) then
-    lpkg.create_link(pkg)
+    lpkg.create_links(pkg)
     lpkg.gen_dotpkg_file(pkg, { pinned = false })
   else
     log.info "The package has been installed but the link has not been created. I use a switch to switch between versions."

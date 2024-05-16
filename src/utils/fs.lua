@@ -135,4 +135,8 @@ M.is_empty = path.isempty
 
 M.splitext = path.splitext
 
+M.rm_folder_link = function(p)
+  return os.execute("rm " .. p)
+end
+
 return M

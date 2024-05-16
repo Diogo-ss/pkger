@@ -13,8 +13,19 @@ function M.system(cmd)
   local str = type(cmd) == "table" and table.concat(cmd, " ") or cmd
   local ok, handle = pcall(io.popen, str)
 
-  if not (ok or handle) then
+  if not ok or not handle then
     return -1, nil
+  end
+
+  local output_lines = {}
+
+  while true do
+    local line = handle:read "*l"
+    if not line then
+      break
+    end
+    table.insert(output_lines, line)
+    print(line)
   end
 
   local output = handle:read "*a"

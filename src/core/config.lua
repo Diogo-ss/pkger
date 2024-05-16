@@ -44,10 +44,11 @@ function M.init()
   m(PKGER_BIN)
   m(PKGER_ETC)
   m(PKGER_LIB)
-  m(PKGER_DATA)
+  m(PKGER_PKGS)
   m(PKGER_CACHE)
   m(PKGER_TMP)
   m(PKGER_CONFIG)
+  m(PKGER_OPT)
 
   local ok, result = pcall(M.read_user_config)
 

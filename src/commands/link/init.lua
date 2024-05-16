@@ -30,12 +30,11 @@ function M.link(name, version, flags)
     log.err(("version %s is not installed"):format(c.cyan(version)))
   end
 
-  new_pkg.INSTALLATION_DIRECTORY = new_pkg.dir
   -- TODO: set false in is_dependency
 
   lpkg.gen_dotpkg_file(new_pkg, { pinned = false })
   lpkg.gen_dotinfos_file(new_pkg, { is_dependency = false })
-  lpkg.create_link(new_pkg)
+  lpkg.create_links(new_pkg)
 
   log.info(("Complete, %s@%s is available."):format(name, version))
 end

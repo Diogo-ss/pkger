@@ -29,7 +29,7 @@ local function env()
     PKGER_BIN = PKGER_BIN,
     PKGER_ETC = PKGER_ETC,
     PKGER_LIB = PKGER_LIB,
-    PKGER_DATA = PKGER_DATA,
+    PKGER_DATA = PKGER_PKGS,
     PKGER_CACHE = PKGER_CACHE,
     PKGER_TMP_DIR = PKGER_TMP,
   }
@@ -88,6 +88,8 @@ function M.get_pkg(repos, name, version)
     local ok, pkg = pcall(M.load_script, content)
 
     if ok then
+      pkg.bin_name = pkg.bin:match ".+/([^/]+)$" or pkg.bin
+      pkg.INSTALLATION_DIRECTORY = fs.join(PKGER_PKGS, pkg.name, pkg.version)
       pkg.script_infos = {
         url = url,
         content = content,
@@ -125,7 +127,7 @@ function M.parse(pkgs)
 end
 
 function M.has_package(name, version)
-  local file = fs.join(PKGER_DATA, name, version, PKGER_DOT_INFOS)
+  local file = fs.join(PKGER_PKGS, name, version, PKGER_DOT_INFOS)
 
   return fs.is_file(file)
 end
@@ -134,7 +136,7 @@ end
 function M.list_packages()
   local pkgs = {}
 
-  fs.each(fs.join(PKGER_DATA, "*"), function(P)
+  fs.each(fs.join(PKGER_PKGS, "*"), function(P)
     if fn.endswith(P, PKGER_DOT_INFOS) then
       local ok, infos = pcall(dofile, P)
 
@@ -153,7 +155,7 @@ end
 function M.list_primary_pkgs()
   local current_pkgs = {}
 
-  fs.each(fs.join(PKGER_DATA, "*"), function(pkg_dir)
+  fs.each(fs.join(PKGER_PKGS, "*"), function(pkg_dir)
     if fs.is_dir(pkg_dir) then
       local main_pkg_file = fs.join(pkg_dir, PKGER_DOT_PKG)
       if fs.is_file(main_pkg_file) then
@@ -185,7 +187,7 @@ function M.list_available_versions(name)
 end
 
 function M.get_pkg_infos(name, version)
-  local file = fs.join(PKGER_DATA, name, version, PKGER_DOT_INFOS)
+  local file = fs.join(PKGER_PKGS, name, version, PKGER_DOT_INFOS)
 
   local ok, infos = pcall(dofile, file)
 
@@ -197,7 +199,7 @@ function M.get_pkg_infos(name, version)
 end
 
 function M.get_current_pkg(name)
-  local file = fs.join(PKGER_DATA, name, PKGER_DOT_PKG)
+  local file = fs.join(PKGER_PKGS, name, PKGER_DOT_PKG)
 
   local ok, infos = pcall(dofile, file)
 
@@ -228,7 +230,8 @@ function M.gen_dotinfos_file(pkg, flags)
   flags = flags or {}
 
   local dir = pkg.INSTALLATION_DIRECTORY
-  local file = fs.join(PKGER_DATA, pkg.name, pkg.version, PKGER_DOT_INFOS)
+  local file = fs.join(PKGER_PKGS, pkg.name, pkg.version, PKGER_DOT_INFOS)
+  local bin_name = pkg.bin:match ".+/([^/]+)$" or pkg.bin
 
   local infos = {
     pkger_version = PKGER_VERSION,
@@ -237,14 +240,14 @@ function M.gen_dotinfos_file(pkg, flags)
     -- aliases = pkg.aliases,
     name = pkg.name,
     version = pkg.version,
+    INSTALLATION_DIRECTORY = dir,
     bin = pkg.bin,
     is_dependency = flags.is_dependency or false,
     depends = pkg.depends or {},
     installed_at = os.date "%Y-%m-%d %H:%M:%S",
     script_infos = pkg.script_infos,
-    dir = dir,
-    prefix = pkg.prefix,
-    bin_name = pkg.bin:match ".+/([^/]+)$" or pkg.bin,
+    prefix = dir,
+    bin_name = bin_name,
     file = file,
   }
 
@@ -259,7 +262,8 @@ function M.gen_dotpkg_file(pkg, flags)
   flags = flags or {}
 
   local dir = pkg.INSTALLATION_DIRECTORY
-  local file = fs.join(PKGER_DATA, pkg.name, PKGER_DOT_PKG)
+  local file = fs.join(PKGER_PKGS, pkg.name, PKGER_DOT_PKG)
+  local bin_name = pkg.bin:match ".+/([^/]+)$" or pkg.bin
 
   local infos = {
     pkger_version = PKGER_VERSION,
@@ -268,10 +272,9 @@ function M.gen_dotpkg_file(pkg, flags)
     -- aliases = pkg.aliases,
     version = pkg.version,
     pinned = flags.pinned or false,
-    prefix = pkg.prefix,
+    bin_name = bin_name,
+    prefix = fs.join(PKGER_OPT, bin_name),
     file = file,
-    dir = dir,
-    bin_name = pkg.bin:match ".+/([^/]+)$" or pkg.bin,
   }
 
   local ok, _ = fs.write_file(file, "return " .. fn.inspect(infos))
@@ -350,24 +353,31 @@ function M.get_source_code(pkg)
   -- fs.rm(dir .. "/" .. file)
 end
 
-function M.create_link(pkg)
-  local dir = pkg.INSTALLATION_DIRECTORY
-
-  fs.mkdir(PKGER_BIN)
-
+function M.create_links(pkg)
   if not fs.is_dir(PKGER_BIN) then
     log.err "Couldn't get the directory for bin."
   end
 
-  local bin_name = pkg.bin:match ".+/([^/]+)$" or pkg.bin
+  local dir = pkg.INSTALLATION_DIRECTORY
+
   local bin_path = fs.join(dir, pkg.bin)
-  local dest_path = fs.join(PKGER_BIN, bin_name)
+  local dest_path = fs.join(PKGER_BIN, pkg.bin_name)
 
   local ok, msg = fs.link(bin_path, dest_path, true)
 
   if not ok then
     log.err("Error creating symbolic link to bin: " .. bin_path .. ". Error: " .. msg)
   end
+
+  local opt_dest_path = fs.join(PKGER_OPT, pkg.bin_name)
+
+  local _ok, _msg = fs.link(dir, opt_dest_path, true)
+
+  if not _ok then
+    log.err("Error creating symbolic link to opt: " .. dir .. ". Error: " .. _msg)
+  end
+
+  --TODO: lib, include
 
   -- TODO: usar test
 end
@@ -407,7 +417,7 @@ function M.get_prefix(name)
   local pkg = M.get_current_pkg(name)
 
   if pkg then
-    return fs.join(PKGER_BIN, pkg.bin_name)
+    return pkg.prefix
   end
 
   return nil

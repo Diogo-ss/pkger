@@ -19,7 +19,7 @@ function M.clean_pkgs()
     end
   end
 
-  fs.each(fs.join(PKGER_DATA, "*"), function(P, mode)
+  fs.each(fs.join(PKGER_PKGS, "*"), function(P, mode)
     if mode == "directory" then
       if fs.is_empty(P) then
         fs.rm(P)
@@ -65,7 +65,7 @@ function M.remove(name, version, flags)
     return
   end
 
-  local dir = fs.join(PKGER_DATA, name, version)
+  local dir = fs.join(PKGER_PKGS, name, version)
 
   if not fs.is_dir(dir) then
     log.error(("The directory for %s@%s doesn't exist."):format(name, version))
