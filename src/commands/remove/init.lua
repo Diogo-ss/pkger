@@ -8,7 +8,7 @@ local U = require "src.commands.unlink"
 local M = {}
 
 local function _version_suffix(version)
-  return version ~= PKGER_SCRIPT_VERSION and "@" .. version or ""
+  return version ~= PKGER_SCRIPT_VERSION and ("@" .. version) or ""
 end
 
 function M.remove(name, version, flags)
@@ -27,7 +27,13 @@ function M.remove(name, version, flags)
   local dependents = lpkg.list_all_dependent_pkgs(name)
 
   if not flags.force and not tbl.is_empty(dependents) then
-    log.err("It was not possible to remove the package because it is a dependency for: " .. str)
+    local str = ""
+
+    tbl.map(dependents, function(val)
+      str = val.name .. "@" .. val.version .. " "
+    end)
+
+    log.err(fn.f("%s is a dependency for: %s", name, str))
   end
 
   local dir = pkg.INSTALLATION_DIRECTORY
@@ -66,7 +72,7 @@ function M.parser(args, flags)
     end
 
     if not ok then
-      log.error(fn.f("The package could not be removed: %s@%s", name, _version_suffix(version)))
+      log.error(fn.f("%s%s could not be removed.", name, _version_suffix(version)))
     end
   end
 end
