@@ -37,7 +37,7 @@ function M.remove(name, version, flags)
   local pkg_file = nil
   local dotpkg = lpkg.get_current_pkg(name)
 
-  if not version or version == "script" or (dotpkg and version == dotpkg.version) then
+  if not version or version == PKGER_SCRIPT_VERSION or (dotpkg and version == dotpkg.version) then
     if not dotpkg then
       log.error("It was not possible to determine the main version of the package: " .. name)
       error()
@@ -100,7 +100,7 @@ function M.remove_pkgs(pkgs)
   for name, version in pairs(pkgs) do
     local ok, msg = pcall(M.remove, name, version)
     if not ok then
-      version = version ~= "script" and "@" .. version or ""
+      version = version ~= PKGER_SCRIPT_VERSION and "@" .. version or ""
       log.error("The package could not be removed: " .. name .. version)
     end
   end

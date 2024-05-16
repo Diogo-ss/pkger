@@ -32,7 +32,7 @@ function M.upgrade_pkg(pkg, is_dependency, flags)
   end
 
   log.info "Checking for a new version...."
-  local new_pkg = lpkg.get_pkg(cache.repos, pkg.name, "script")
+  local new_pkg = lpkg.get_pkg(cache.repos, pkg.name, PKGER_SCRIPT_VERSION)
 
   if not new_pkg then
     log.warn("Could not get the script for: " .. pkg.name)

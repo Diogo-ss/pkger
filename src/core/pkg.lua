@@ -119,7 +119,7 @@ function M.parse(pkgs)
 
       results[name] = version
     else
-      results[pkg] = "script"
+      results[pkg] = PKGER_SCRIPT_VERSION
     end
   end
 

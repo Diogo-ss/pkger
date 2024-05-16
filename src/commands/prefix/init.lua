@@ -21,7 +21,7 @@ function M.prefix(args)
     end
 
     if not pkg then
-      version = version ~= "script" and "@" .. version or ""
+      version = version ~= PKGER_SCRIPT_VERSION and "@" .. version or ""
       log.error(name .. version .. " isn't installed.")
       return
     end
