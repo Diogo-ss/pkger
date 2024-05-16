@@ -443,14 +443,16 @@ homepage: %s
   ))
 end
 
-function M.get_prefix(name)
-  local pkg = M.get_current_pkg(name)
+function M.prefix(name, version)
+  local pkg = nil
 
-  if pkg then
-    return pkg.prefix
+  if not version or version == PKGER_SCRIPT_VERSION then
+    pkg = M.get_current_pkg(name)
+  else
+    pkg = M.get_pkg_infos(name, version)
   end
 
-  return nil
+  return pkg and pkg.prefix or nil
 end
 
 return M

@@ -12,20 +12,14 @@ function M.parser(args, flags)
   local pkgs = lpkg.parse(args)
 
   for name, version in pairs(pkgs) do
-    local pkg = nil
+    local prefix = lpkg.prefix(name, version)
 
-    if version == PKGER_SCRIPT_VERSION then
-      pkg = lpkg.get_current_pkg(name)
-    else
-      pkg = lpkg.get_pkg_infos(name, version)
-    end
-
-    if not pkg then
+    if not prefix then
       log.error(name .. " isn't installed.")
       return
     end
 
-    log(pkg.prefix)
+    log(prefix)
   end
 end
 
