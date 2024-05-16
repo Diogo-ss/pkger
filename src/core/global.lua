@@ -21,6 +21,7 @@ PKGER_CONFIG_FILE = PKGER_CONFIG .. "/config.lua"
 PKGER_DOT_PKG = ".pkg"
 PKGER_DOT_INFOS = ".infos"
 PKGER_SCRIPT_VERSION = "script"
+PKGER_DEBUG_MODE = false
 
 -- PKGER_MODULES = PKGER_PREFIX .. "/modules"
 -- PKGER_INSTANCE =

@@ -37,7 +37,11 @@ function M.parser(args, flags)
   end
 
   for _, name in pairs(args) do
-    local ok, _ = pcall(M.unpin, name, flags)
+    local ok, msg = pcall(M.unpin, name, flags)
+
+    if PKGER_DEBUG_MODE then
+      log(msg)
+    end
   end
 end
 

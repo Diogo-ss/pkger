@@ -13,6 +13,10 @@ local command, args, flags = fn.args_parser(arg)
 --   cache.clear()
 -- end
 
+if flags.debug then
+  PKGER_DEBUG_MODE = true
+end
+
 if not command then
   log.error(("Use '%s' for usage information."):format(c.green "pkger --help"))
   return

@@ -38,8 +38,6 @@ function M.remove(name, version, flags)
 
   local primary_pkg = lpkg.get_current_pkg(name)
 
-  fn.print(primary_pkg)
-
   if primary_pkg and primary_pkg.version == pkg.version then
     U.unlink(name)
   end
@@ -62,6 +60,11 @@ function M.parser(args, flags)
 
   for name, version in pairs(pkgs) do
     local ok, msg = pcall(M.remove, name, version, flags or {})
+
+    if PKGER_DEBUG_MODE then
+      log(msg)
+    end
+
     if not ok then
       log.error(fn.f("The package could not be removed: %s@%s", name, _version_suffix(version)))
     end

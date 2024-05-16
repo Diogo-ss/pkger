@@ -38,7 +38,11 @@ function M.parser(args)
     return
   end
 
-  local ok, _ = pcall(M.unlink, args[1])
+  local ok, msg = pcall(M.unlink, args[1])
+
+  if PKGER_DEBUG_MODE then
+    log(msg)
+  end
 end
 
 return M

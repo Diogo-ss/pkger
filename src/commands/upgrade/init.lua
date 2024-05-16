@@ -96,8 +96,10 @@ function M.parser(args, flags)
   end
 
   for _, pkg in pairs(pkgs) do
-    local ok, _ = pcall(M.upgrade_pkg, pkg, flags)
-    print(_)
+    local ok, msg = pcall(M.upgrade_pkg, pkg, flags)
+    if PKGER_DEBUG_MODE then
+      log(msg)
+    end
   end
 end
 

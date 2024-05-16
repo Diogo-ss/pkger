@@ -10,8 +10,6 @@ local M = {}
 local shell_code = 0
 
 function M.system(cmd, flags)
-  flags = flags or { debug = true }
-
   local str = type(cmd) == "table" and table.concat(cmd, " ") or cmd
   local ok, handle = pcall(io.popen, str)
 
@@ -21,7 +19,7 @@ function M.system(cmd, flags)
 
   local output_lines = {}
 
-  if flags.debug then
+  if PKGER_DEBUG_MODE then
     while true do
       local line = handle:read "*l"
       if not line then

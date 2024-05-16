@@ -45,7 +45,11 @@ function M.parser(args)
   local name = next(pkg)
   local version = pkg[name]
 
-  local ok, _ = pcall(M.switch, name, version)
+  local ok, msg = pcall(M.switch, name, version)
+
+  if PKGER_DEBUG_MODE then
+    log(msg)
+  end
 end
 
 return M
