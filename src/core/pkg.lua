@@ -23,6 +23,7 @@ local function env()
     log = log,
     cwd = fs.cwd,
     join = fs.join,
+    pkg = M.pkg,
     extract = fs.extract,
     INSTALLATION_ENVIRONMENT = true,
     PKGER_PREFIX = PKGER_PREFIX,
@@ -33,6 +34,7 @@ local function env()
     PKGER_DATA = PKGER_PKGS,
     PKGER_CACHE = PKGER_CACHE,
     PKGER_TMP_DIR = PKGER_TMP,
+    PKGER_DEBUG_MODE = PKGER_DEBUG_MODE,
   }
 end
 
@@ -82,6 +84,7 @@ function M.load_script(script)
 
   pkg.bin_name = pkg.bin:match ".+/([^/]+)$" or pkg.bin
   pkg.INSTALLATION_DIRECTORY = fs.join(PKGER_PKGS, pkg.name, pkg.version)
+  pkg.etc = fs.join(pkg.INSTALLATION_DIRECTORY, (pkg.etc or "etc"))
 
   return pkg
 end
@@ -316,12 +319,14 @@ function M.run_pkg(pkg)
     end
 
     if type(func) ~= "function" then
-      log.err(n .. " não é do tipo função.")
+      log.err(c.yellow(n) .. " is not a function type.")
     end
+
+    log.arrow("Executing step: " .. c.green(n), "blue")
     local ok, msg = pcall(func)
 
     if not ok then
-      log.err(n .. " cannot be executed: " .. msg)
+      log.err(c.red(n) .. " cannot be executed: " .. msg)
     end
 
     ::continue::
@@ -454,5 +459,37 @@ function M.prefix(name, version)
 
   return pkg and pkg.prefix or nil
 end
+
+function M.pkg(name)
+  local infos = M.get_current_pkg(name)
+
+  if not infos then
+    return {}
+  end
+
+  return {
+    prefix = infos.prefix,
+    bin_name = infos.bin_name,
+    INSTALLATION_DIRECTORY = infos.INSTALLATION_DIRECTORY,
+    version = infos.version,
+  }
+end
+
+-- setmetatable(M.pkg, {
+--   __index = function(_, name)
+--     local infos = M.get_current_pkg(name)
+
+--     if not infos then
+--       return {}
+--     end
+
+--     return {
+--       prefix = infos.prefix,
+--       bin_name = infos.bin_name,
+--       INSTALLATION_DIRECTORY = infos.INSTALLATION_DIRECTORY,
+--       version = infos.version,
+--     }
+--   end,
+-- })
 
 return M

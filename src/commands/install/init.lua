@@ -144,8 +144,33 @@ function M.install(name, version, is_dependency, flags)
   fs.cd(cache.current_dir)
 end
 
+-- not safe to use
+function M.file(flags)
+  local file = fs.is_file(flags.file)
+
+  if not file then
+    log.error "não é arquivo"
+    return
+  end
+
+  local ok, content = fs.read_file(fs.is_file(flags.file))
+
+  local pkg = lpkg.load_script(content)
+
+  if not pkg then
+    log.error "não achou pacote"
+  end
+
+  M.load_pkg(pkg, false, {})
+end
+
 function M.parser(args, flags)
   local pkgs = lpkg.parse(args)
+
+  if flags.file then
+    M.file(flags)
+    return
+  end
 
   if tbl.is_empty(pkgs) then
     log.error "No targets specified. Use --help."

@@ -17,16 +17,13 @@ function M.system(cmd, flags)
     return -1, nil
   end
 
-  local output_lines = {}
-
   if PKGER_DEBUG_MODE then
     while true do
       local line = handle:read "*l"
       if not line then
         break
       end
-      table.insert(output_lines, line)
-      print(line)
+      log(line)
     end
   end
 
