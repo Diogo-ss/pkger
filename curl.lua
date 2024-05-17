@@ -15,12 +15,14 @@ checkver = {
 }
 
 function pre_install()
+  print(pkg("neovim").prefix)
+
   system {
     "./configure",
     "--disable-debug",
     "--disable-dependency-tracking",
     "--disable-silent-rules",
-    "--prefix=" .. INSTALLATION_DIRECTORY,
+    "--prefix=" .. pkgdir,
     "--with-openssl",
     "--without-ca-bundle",
     "--without-ca-path",

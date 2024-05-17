@@ -84,13 +84,12 @@ function M.load_script(script)
   if not pkg.version then
     error "It was not possible to determine the version of the package."
   end
+  pkg.bin_name = (pkg.bin and pkg.bin:match ".+/([^/]+)$") or pkg.bin
 
   local dir = fs.join(PKGER_PKGS, pkg.name, pkg.version)
   local etc = fs.join(dir, (pkg.etc or "etc"))
 
-  pkg.bin_name = (pkg.bin and pkg.bin:match ".+/([^/]+)$") or pkg.bin
-
-  -- to script
+  -- script
   pkg.pkgdir = dir
   pkg.pkgetc = etc
 
@@ -495,8 +494,9 @@ function M.pkg(name)
     prefix = infos.prefix,
     bin_name = infos.bin_name,
     is_libary = infos.is_libary,
-    pkgdir = infos.pkgdir,
     version = infos.version,
+    pkgdir = infos.pkgdir,
+    pkgetc = infos.pkgetc,
   }
 end
 
