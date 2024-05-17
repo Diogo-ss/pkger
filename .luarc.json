@@ -14,6 +14,6 @@
     "PKGER_CONFIG",
     "PKGER_TMP_DIR",
     "PKGER_USER_AGENT",
-        "pkgdir"
+    "pkgdir"
   ]
 }

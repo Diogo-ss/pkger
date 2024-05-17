@@ -18,13 +18,17 @@ local function run_sandbox(code, custom_env)
   local chunk, err = load(code, "sandbox", "t", custom_env)
 
   if not chunk then
-    error("Error loading code: " .. err)
+    log.err("Error loading code: " .. err)
+  end
+
+  if type(chunk) ~= "function" then
+    log.err("It was not possible to obtain a function when loading the file.")
   end
 
   local ok, result = pcall(chunk)
 
   if not ok then
-    error("Error executing code: " .. result)
+    log.err("Error executing code: " .. result)
   end
 
   return custom_env
