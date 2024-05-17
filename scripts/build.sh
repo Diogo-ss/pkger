@@ -24,4 +24,4 @@ fi
 
 SRC_DIR="src"
 
-luastatic "$SRC_DIR/main.lua" $(find "$SRC_DIR" -type f -name "*.lua") "$(brew --prefix lua)/lib/liblua.a" -I"$(brew --prefix lua)/include/lua" -o "$SRC_DIR/pkger"
+luastatic "$SRC_DIR/main.lua" $(find "$SRC_DIR" -type f -name "*.lua") "$(brew --prefix lua)/lib/liblua.a" -I"$(brew --prefix lua)/include/lua" -o "pkger"
