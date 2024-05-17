@@ -56,6 +56,33 @@ lua src/main.lua --help
 
 </details>
 
+## PKG
+
+A simple script to install Neovim in version 0.9.5 (binary)
+
+```lua
+name = "neovim"
+description = "Vim-fork focused on extensibility and usability"
+homepage = "https://neovim.io"
+license = "Apache-2.0"
+manteiners = "Diogo-ss"
+version = "0.9.4"
+url = "https://github.com/neovim/neovim/releases/download/v${{ version }}/nvim-linux64.tar.gz"
+
+bin = "bin/nvim"
+
+checkver = {
+	url = "https://api.github.com/repos/neovim/neovim/releases/latest",
+	jsonpath = "tag_name",
+	regex = "[Vv]?(.+)",
+}
+
+function install()
+	system("mv * ..")
+end
+```
+
+
 ## build
 
 ### dependencies
