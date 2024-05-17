@@ -20,6 +20,8 @@ The purpose of this package manager is to allow packages to be distributed in Lu
 - [ ] Metadata search
 - [ ] Doc for self-hosting
 - [ ] Write specifications.
+- [ ] Improving dependency management.
+- [ ] Makedepends
 
 ## installation
 
