@@ -36,9 +36,9 @@ function M.system(cmd)
 end
 
 M.safe_system = function(cmd)
-  if not INSTALLATION_ENVIRONMENT then
-    return nil, "`safe_system` function can only be used in installation environments."
-  end
+  -- if not INSTALLATION_ENVIRONMENT then
+  --   log.err("`safe_system` function can only be used in installation environments.")
+  -- end
 
   local code, output = M.system(cmd)
 
@@ -111,7 +111,7 @@ function M.startswith(str, s)
 end
 
 function M.endswith(str, s)
-  return str:sub(- #s) == s
+  return str:sub(-#s) == s
 end
 
 function M.sleep(sec)

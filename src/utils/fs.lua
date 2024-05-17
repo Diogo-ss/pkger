@@ -29,9 +29,9 @@ function M.write_file(dir, contents, mode)
 end
 
 function M.cd_safe(dir)
-  if not INSTALLATION_ENVIRONMENT then
-    return nil, "The `cd_safe` function can only be used in installation environments."
-  end
+  -- if not INSTALLATION_ENVIRONMENT then
+  --   return nil, "The `cd_safe` function can only be used in installation environments."
+  -- end
 
   local ok, err = M.cd(dir)
   if not ok then

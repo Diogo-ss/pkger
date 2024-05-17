@@ -22,7 +22,7 @@ local function run_sandbox(code, custom_env)
   end
 
   if type(chunk) ~= "function" then
-    log.err("It was not possible to obtain a function when loading the file.")
+    log.err "It was not possible to obtain a function when loading the file."
   end
 
   local ok, result = pcall(chunk)
