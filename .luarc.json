@@ -13,6 +13,7 @@
     "PKGER_LOCKED",
     "PKGER_CONFIG",
     "PKGER_TMP_DIR",
-    "PKGER_USER_AGENT"
+    "PKGER_USER_AGENT",
+        "pkgdir"
   ]
 }

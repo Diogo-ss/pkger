@@ -21,6 +21,7 @@ local function env()
     cd = fs.cd,
     log = log,
     cwd = fs.cwd,
+    print = print,
     join = fs.join,
     is_file = fs.is_file,
     is_dir = fs.is_file,
@@ -84,9 +85,14 @@ function M.load_script(script)
     error "It was not possible to determine the version of the package."
   end
 
+  local dir = fs.join(PKGER_PKGS, pkg.name, pkg.version)
+  local etc = fs.join(dir, (pkg.etc or "etc"))
+
   pkg.bin_name = (pkg.bin and pkg.bin:match ".+/([^/]+)$") or pkg.bin
-  pkg.INSTALLATION_DIRECTORY = fs.join(PKGER_PKGS, pkg.name, pkg.version)
-  pkg.etc = fs.join(pkg.INSTALLATION_DIRECTORY, (pkg.etc or "etc"))
+
+  -- to script
+  pkg.pkgdir = dir
+  pkg.pkgetc = etc
 
   return pkg
 end
@@ -242,7 +248,7 @@ end
 function M.gen_dotinfos_file(pkg, flags)
   flags = flags or {}
 
-  local dir = pkg.INSTALLATION_DIRECTORY
+  local dir = pkg.pkgdir
   local file = fs.join(PKGER_PKGS, pkg.name, pkg.version, PKGER_DOT_INFOS)
   local bin_name = (pkg.bin and pkg.bin:match ".+/([^/]+)$") or pkg.bin
 
@@ -257,7 +263,7 @@ function M.gen_dotinfos_file(pkg, flags)
     -- aliases = pkg.aliases,
     name = pkg.name,
     version = pkg.version,
-    INSTALLATION_DIRECTORY = dir,
+    pkgdir = dir,
     bin = pkg.bin,
     is_dependency = flags.is_dependency or false,
     is_libary = pkg.is_libary or false,
@@ -279,7 +285,7 @@ end
 function M.gen_dotpkg_file(pkg, flags)
   flags = flags or {}
 
-  local dir = pkg.INSTALLATION_DIRECTORY
+  local dir = pkg.pkgdir
   local file = fs.join(PKGER_PKGS, pkg.name, PKGER_DOT_PKG)
   local bin_name = (pkg.bin and pkg.bin:match ".+/([^/]+)$") or pkg.bin
 
@@ -290,7 +296,7 @@ function M.gen_dotpkg_file(pkg, flags)
   local opt_name = pkg.is_libary and pkg.name or pkg.bin_name
 
   local infos = {
-    INSTALLATION_DIRECTORY = dir,
+    pkgdir = dir,
     pkger_version = PKGER_VERSION,
     name = pkg.name,
     created_at = os.date "%Y-%m-%d %H:%M:%S",
@@ -314,9 +320,9 @@ function M.run_pkg(pkg)
   log.info "Starting script execution..."
 
   local order = {
-    "pre_biuld",
-    "biuld",
-    "pos_biuld",
+    "build",
+    "pre_build",
+    "pos_build",
     "pre_install",
     "install",
     "pos_install",
@@ -386,11 +392,11 @@ function M.get_source_code(pkg)
   -- remove file
   fs.rm(file)
 
-  local dirs = fs._list_all(pkg.INSTALLATION_DIRECTORY)
+  local dirs = fs._list_all(pkg.pkgdir)
 
   if #dirs == 1 then
     local i = next(dirs)
-    local source_dir = fs.join(pkg.INSTALLATION_DIRECTORY, dirs[i])
+    local source_dir = fs.join(pkg.pkgdir, dirs[i])
 
     if fs.attributes(source_dir, "mode") == "directory" then
       fs.cd(source_dir)
@@ -407,7 +413,7 @@ function M.create_links(pkg)
     log.err "Couldn't get the directory for bin."
   end
 
-  local dir = pkg.INSTALLATION_DIRECTORY
+  local dir = pkg.pkgdir
 
   if pkg.bin_name then
     local bin_path = fs.join(dir, pkg.bin)
@@ -458,8 +464,8 @@ homepage: %s
     c.cyan(pkg.description),
     c.cyan(pkg.version),
     c.cyan(pkg.hash or "nil"),
-    c.yellow(manteiners),
     c.blue(license),
+    c.yellow(manteiners),
     c.blue(pkg.homepage),
     bar
     -- pkg.script_infos.url
@@ -489,7 +495,7 @@ function M.pkg(name)
     prefix = infos.prefix,
     bin_name = infos.bin_name,
     is_libary = infos.is_libary,
-    INSTALLATION_DIRECTORY = infos.INSTALLATION_DIRECTORY,
+    pkgdir = infos.pkgdir,
     version = infos.version,
   }
 end

@@ -57,7 +57,7 @@ end
 function M.load_pkg(pkg, is_dependency, flags)
   is_dependency = is_dependency or false
 
-  local dir = pkg.INSTALLATION_DIRECTORY
+  local dir = pkg.pkgdir
   cache.installation_directory = dir
 
   if fs.is_dir(dir) and fs.rm_dir(dir) ~= nil then

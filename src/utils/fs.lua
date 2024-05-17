@@ -39,10 +39,10 @@ function M.cd_safe(dir)
   end
 
   -- INSTALLATION_DIRECTORY is defined in installation environments
-  if string.match(M.cwd(), INSTALLATION_DIRECTORY) then
+  if string.match(M.cwd(), pkgdir) then
     return true
   else
-    M.cd(INSTALLATION_DIRECTORY)
+    M.cd(pkgdir)
     return nil, "Navigation outside of safe scope."
   end
 end

@@ -36,7 +36,7 @@ function M.remove(name, version, flags)
     log.err(fn.f("%s is a dependency for: %s", name, str))
   end
 
-  local dir = pkg.INSTALLATION_DIRECTORY
+  local dir = pkg.pkgdir
 
   if not fs.is_dir(dir) then
     log.err(("The directory for %s@%s doesn't exist."):format(name, version))
