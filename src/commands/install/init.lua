@@ -60,7 +60,7 @@ function M.load_pkg(pkg, is_dependency, flags)
   local dir = pkg.INSTALLATION_DIRECTORY
   cache.installation_directory = dir
 
-  if fs.is_dir(dir) and not fs.rm_dir(dir) == nil then
+  if fs.is_dir(dir) and fs.rm_dir(dir) ~= nil then
     log.err("Unable to clear directory for installation: " .. dir)
   end
 
@@ -93,9 +93,10 @@ function M.load_pkg(pkg, is_dependency, flags)
     fs.rm_dir(pkg.source_dir)
   end
 
-  if not pkg.keep_source_file and fs.is_file(pkg.source_file) then
-    fs.rm(pkg.source_file)
-  end
+  -- TODO: use table map in source dir
+  -- if not pkg.keep_source_file and fs.is_file(pkg.source_file) then
+  --   fs.rm(pkg.source_file)
+  -- end
 
   if flags.upgrade then
     log.info(("Installation completed: %s@%s"):format(pkg.name, pkg.version))

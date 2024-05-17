@@ -84,7 +84,7 @@ function M.load_script(script)
     error "It was not possible to determine the version of the package."
   end
 
-  pkg.bin_name = pkg.bin:match ".+/([^/]+)$" or pkg.bin
+  pkg.bin_name = (pkg.bin and pkg.bin:match ".+/([^/]+)$") or pkg.bin
   pkg.INSTALLATION_DIRECTORY = fs.join(PKGER_PKGS, pkg.name, pkg.version)
   pkg.etc = fs.join(pkg.INSTALLATION_DIRECTORY, (pkg.etc or "etc"))
 
@@ -244,7 +244,11 @@ function M.gen_dotinfos_file(pkg, flags)
 
   local dir = pkg.INSTALLATION_DIRECTORY
   local file = fs.join(PKGER_PKGS, pkg.name, pkg.version, PKGER_DOT_INFOS)
-  local bin_name = pkg.bin:match ".+/([^/]+)$" or pkg.bin
+  local bin_name = (pkg.bin and pkg.bin:match ".+/([^/]+)$") or pkg.bin
+
+  if not bin_name then
+    pkg.is_libary = true
+  end
 
   local infos = {
     pkger_version = PKGER_VERSION,
@@ -256,6 +260,7 @@ function M.gen_dotinfos_file(pkg, flags)
     INSTALLATION_DIRECTORY = dir,
     bin = pkg.bin,
     is_dependency = flags.is_dependency or false,
+    is_libary = pkg.is_libary or false,
     depends = pkg.depends or {},
     installed_at = os.date "%Y-%m-%d %H:%M:%S",
     script_infos = pkg.script_infos,
@@ -276,7 +281,13 @@ function M.gen_dotpkg_file(pkg, flags)
 
   local dir = pkg.INSTALLATION_DIRECTORY
   local file = fs.join(PKGER_PKGS, pkg.name, PKGER_DOT_PKG)
-  local bin_name = pkg.bin:match ".+/([^/]+)$" or pkg.bin
+  local bin_name = (pkg.bin and pkg.bin:match ".+/([^/]+)$") or pkg.bin
+
+  if not bin_name then
+    pkg.is_libary = true
+  end
+
+  local opt_name = pkg.is_libary and pkg.name or pkg.bin_name
 
   local infos = {
     INSTALLATION_DIRECTORY = dir,
@@ -286,8 +297,9 @@ function M.gen_dotpkg_file(pkg, flags)
     -- aliases = pkg.aliases,
     version = pkg.version,
     pinned = flags.pinned or false,
+    is_libary = pkg.is_libary or false,
     bin_name = bin_name,
-    prefix = fs.join(PKGER_OPT, bin_name),
+    prefix = fs.join(PKGER_OPT, opt_name),
     file = file,
   }
 
@@ -397,16 +409,20 @@ function M.create_links(pkg)
 
   local dir = pkg.INSTALLATION_DIRECTORY
 
-  local bin_path = fs.join(dir, pkg.bin)
-  local dest_path = fs.join(PKGER_BIN, pkg.bin_name)
+  if pkg.bin_name then
+    local bin_path = fs.join(dir, pkg.bin)
+    local dest_path = fs.join(PKGER_BIN, pkg.bin_name)
 
-  local ok, msg = fs.link(bin_path, dest_path, true)
+    local ok, msg = fs.link(bin_path, dest_path, true)
 
-  if not ok then
-    log.err("Error creating symbolic link to bin: " .. bin_path .. ". Error: " .. msg)
+    if not ok then
+      log.err("Error creating symbolic link to bin: " .. bin_path .. ". Error: " .. msg)
+    end
   end
 
-  local opt_dest_path = fs.join(PKGER_OPT, pkg.bin_name)
+  local opt_name = pkg.bin_name or pkg.name
+
+  local opt_dest_path = fs.join(PKGER_OPT, opt_name)
 
   local _ok, _msg = fs.link(dir, opt_dest_path, true)
 
@@ -472,6 +488,7 @@ function M.pkg(name)
   return {
     prefix = infos.prefix,
     bin_name = infos.bin_name,
+    is_libary = infos.is_libary,
     INSTALLATION_DIRECTORY = infos.INSTALLATION_DIRECTORY,
     version = infos.version,
   }

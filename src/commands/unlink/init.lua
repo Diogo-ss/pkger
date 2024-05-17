@@ -13,21 +13,26 @@ function M.unlink(name)
     return
   end
 
-  local bin = fs.join(PKGER_BIN, current_pkg.bin_name)
+  if not current_pkg.is_libary then
+    local bin = fs.join(PKGER_BIN, current_pkg.bin_name)
 
-  fs.rm(current_pkg.file)
+    if fs.is_file(bin) and not fs.rm(bin) then
+      log.err("It was not possible to remove the symbolic link of bin: " .. bin)
+    end
 
-  if fs.is_file(bin) and not fs.rm(bin) then
-    log.err("It was not possible to remove the symbolic link of bin: " .. bin)
+    log.info("Symbolic link has been removed: " .. c.cyan(bin))
   end
 
-  local opt = fs.join(PKGER_OPT, current_pkg.bin_name)
+  local opt_name = current_pkg.is_libary and current_pkg.name or current_pkg.bin_name
+
+  local opt = fs.join(PKGER_OPT, opt_name)
 
   if fs.is_dir(opt) and not fs.rm_folder_link(opt) then
     log.err("It was not possible to remove the symbolic link of opt: " .. opt)
   end
 
-  log.info("Symbolic link has been removed: " .. c.cyan(bin))
+  fs.rm(current_pkg.file)
+
   log.info("Symbolic link has been removed: " .. c.cyan(opt))
 end
 
