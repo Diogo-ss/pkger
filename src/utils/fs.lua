@@ -62,7 +62,7 @@ function M.extract(file, format)
 
   local cmds = extract_commands[format]
   if not (cmds and format) then
-    return false, "Unsupported file format."
+    return nil, "Unsupported file format."
   end
 
   for _, cmd in ipairs(cmds) do

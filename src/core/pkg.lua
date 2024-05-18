@@ -26,6 +26,7 @@ local function env()
     is_file = fs.is_file,
     is_dir = fs.is_file,
     pkg = M.pkg,
+    mkdir = fs.mkdir,
     tbl = tbl,
     extract = fs.extract,
     INSTALLATION_ENVIRONMENT = true,
@@ -429,12 +430,13 @@ function M.get_source_code(pkg)
     pkg.source_file = soure_file
   end
 
-  if not _ok then
+  if _ok == false then
     log.err("Error trying to extract file: " .. file)
   end
 
-  -- remove file
-  fs.rm(file)
+  if _ok then
+    fs.rm(file)
+  end
 
   local dirs = fs._list_all(pkg.pkgdir)
 

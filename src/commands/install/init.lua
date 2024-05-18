@@ -131,7 +131,7 @@ function M.load_pkg(pkg, is_dependency, flags)
 
   lpkg.gen_dotinfos_file(pkg, { is_dependency = is_dependency })
 
-  if not pkg.keep_source_dir and fs.is_dir(pkg.source_dir) then
+  if not pkg.keep_source_dir and pkg.source_dir and fs.is_dir(pkg.source_dir) then
     fs.rm_dir(pkg.source_dir)
   end
 
@@ -201,13 +201,13 @@ function M.file(content)
 
   local _ok, msg = pcall(M.load_pkg, pkg, false, {})
 
+  if msg and PKGER_DEBUG_MODE then
+    log(msg)
+  end
+
   if not _ok then
     log.error(("Installation not completed: %s@%s"):format(pkg.name, pkg.version))
     return
-  end
-
-  if msg and PKGER_DEBUG_MODE then
-    log(msg)
   end
 end
 
