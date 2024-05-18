@@ -85,7 +85,7 @@ function M.load_pkg(pkg, is_dependency, flags)
 
   pkg = lpkg.get_source_code(pkg)
 
-  lpkg.run_pkg(pkg)
+  pkg = lpkg.run_pkg(pkg)
 
   lpkg.gen_dotinfos_file(pkg, { is_dependency = is_dependency })
 

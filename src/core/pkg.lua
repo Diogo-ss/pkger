@@ -84,14 +84,19 @@ function M.load_script(script)
   if not pkg.version then
     error "It was not possible to determine the version of the package."
   end
+
   pkg.bin_name = (pkg.bin and pkg.bin:match ".+/([^/]+)$") or pkg.bin
 
   local dir = fs.join(PKGER_PKGS, pkg.name, pkg.version)
   local etc = fs.join(dir, (pkg.etc or "etc"))
+  local share = fs.join(dir, (pkg.share or "share"))
+  local include = fs.join(dir, (pkg.include or "include"))
 
   -- script
   pkg.pkgdir = dir
   pkg.pkgetc = etc
+  pkg.pkgshare = share
+  pkg.pkginclude = include
 
   return pkg
 end
@@ -249,7 +254,7 @@ function M.gen_dotinfos_file(pkg, flags)
 
   local dir = pkg.pkgdir
   local file = fs.join(PKGER_PKGS, pkg.name, pkg.version, PKGER_DOT_INFOS)
-  local bin_name = (pkg.bin and pkg.bin:match ".+/([^/]+)$") or pkg.bin
+  local bin_name = M.bin_name_parser(pkg.bin)
 
   if not bin_name then
     pkg.is_libary = true
@@ -286,7 +291,7 @@ function M.gen_dotpkg_file(pkg, flags)
 
   local dir = pkg.pkgdir
   local file = fs.join(PKGER_PKGS, pkg.name, PKGER_DOT_PKG)
-  local bin_name = (pkg.bin and pkg.bin:match ".+/([^/]+)$") or pkg.bin
+  local bin_name = M.bin_name_parser(pkg.bin)
 
   if not bin_name then
     pkg.is_libary = true
@@ -319,8 +324,8 @@ function M.run_pkg(pkg)
   log.info "Starting script execution..."
 
   local order = {
-    "build",
     "pre_build",
+    "build",
     "pos_build",
     "pre_install",
     "install",
@@ -350,6 +355,43 @@ function M.run_pkg(pkg)
 
     ::continue::
   end
+
+  if not pkg.bin_name then
+    pkg.bin_name = M.get_bin_name(pkg)
+  end
+
+  return pkg
+end
+
+function M.get_bin_name(pkg)
+  local dir = fs.join(pkg.pkgdir, "bin")
+
+  if not fs.is_dir(dir) then
+    return nil
+  end
+
+  local dirs = fs._list_all(dir)
+
+  if #dirs == 1 then
+    local i = next(dirs)
+    local bin_name = fs.join(pkg.pkgdir, dirs[i])
+
+    if fs.attributes(bin_name, "mode") == "file" then
+      return M.bin_name_parser(bin_name)
+    end
+  end
+
+  local file = fs.join(pkg.pkgdir, "bin", pkg.name)
+
+  if fs.is_file(file) then
+    return pkg.name
+  end
+
+  return nil
+end
+
+function M.bin_name_parser(name)
+  return (name and name:match ".+/([^/]+)$") or name
 end
 
 function M.get_source_code(pkg)
@@ -483,6 +525,7 @@ function M.prefix(name, version)
   return pkg and pkg.prefix or nil
 end
 
+-- todo add @ suporte
 function M.pkg(name)
   local infos = M.get_current_pkg(name)
 
@@ -496,7 +539,9 @@ function M.pkg(name)
     is_libary = infos.is_libary,
     version = infos.version,
     pkgdir = infos.pkgdir,
-    pkgetc = infos.pkgetc,
+    -- pkgetc = infos.pkgetc,
+    -- pkgshare = infos.pkgshare,
+    -- pkginclude = infos.pkginclude,
   }
 end
 
