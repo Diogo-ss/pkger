@@ -1,17 +1,13 @@
-FROM nickblah/lua:5.4-luarocks-alpine
+FROM nickblah/lua:5.4-luarocks
 
-RUN apk add build-base bash
+RUN apt-get update && apt-get install -y build-essential
 
 WORKDIR /pkger
 
 COPY . .
 
-RUN luarocks make --only-deps --lua-version=5.4 --local
+# RUN luarocks make --only-deps --lua-version=5.4 --local
 
-RUN luarocks install luastatic
-
-RUN make
-
-RUN mv /bin/pkger /usr/local/bin
+# RUN luarocks install luastatic
 
 CMD [ "bash" ]
