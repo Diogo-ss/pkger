@@ -62,6 +62,8 @@ function M.checkver(url, jsonpath, regex)
   end
 
   text = string.match(text, regex)
+
+  text = fn.trim(text)
   return text ~= "" and text or nil
 end
 
@@ -82,7 +84,7 @@ function M.load_script(script)
   end
 
   if not pkg.version then
-    error "It was not possible to determine the version of the package."
+    log.err "It was not possible to determine the version of the package."
   end
 
   pkg.bin_name = (pkg.bin and pkg.bin:match ".+/([^/]+)$") or pkg.bin
@@ -254,7 +256,7 @@ function M.gen_dotinfos_file(pkg, flags)
 
   local dir = pkg.pkgdir
   local file = fs.join(PKGER_PKGS, pkg.name, pkg.version, PKGER_DOT_INFOS)
-  local bin_name = M.bin_name_parser(pkg.bin)
+  local bin_name = M.bin_name_parser(pkg.bin) or pkg.bin_name
 
   if not bin_name then
     pkg.is_libary = true
@@ -269,6 +271,7 @@ function M.gen_dotinfos_file(pkg, flags)
     version = pkg.version,
     pkgdir = dir,
     bin = pkg.bin,
+    -- installed_as_dependency = flags.installed_as_dependency or false,
     is_dependency = flags.is_dependency or false,
     is_libary = pkg.is_libary or false,
     depends = pkg.depends or {},
