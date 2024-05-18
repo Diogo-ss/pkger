@@ -88,18 +88,33 @@ function M.load_pkg(pkg, is_dependency, flags)
   end
 
   for name, version in pairs(depends) do
-    local infos = lpkg.get_current_pkg(name)
+    -- local current_pkg = lpkg.get_current_pkg(name)
 
-    if infos and version ~= PKGER_SCRIPT_VERSION then
-      if infos.version == version then
-        log.arrow "The dependency is already installed."
-        goto continue
-      end
-    end
+    -- if current_pkg and version ~= PKGER_SCRIPT_VERSION then
+    --   if current_pkg.version == version then
+    --     log.arrow " The dependency is already installed."
+    --     goto continue
+    --   end
+
+    -- local infos = lpkg.get_pkg_infos(name, version)
+
+    -- if infos and infos.version ~= current_pkg.version then
+    --   log.warn(
+    --     fn.f(
+    --       "%s is defined in the %s version, and the package requires the %s version. A `switch` is recommended.",
+    --       name,
+    --       current_pkg.version,
+    --       version
+    --     )
+    --   )
+    --   goto continue
+    -- end
+
+    -- end
 
     _install(name, version, true, {})
 
-    ::continue::
+    -- ::continue::
   end
 
   if not fs.is_dir(dir) and not fs.mkdir(dir) then
