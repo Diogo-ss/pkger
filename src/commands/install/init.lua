@@ -16,6 +16,13 @@ local M = {}
 local function _install(name, version, is_dependency, flags)
   is_dependency = is_dependency or false
 
+  cache.repos = cache.repos or repo.load_all()
+
+  if not cache.repos then
+    log.error "No valid repo was found."
+    fn.exit(1)
+  end
+
   local pkg = lpkg.get_pkg(cache.repos, name, version)
 
   if not pkg then
@@ -29,7 +36,7 @@ local function _install(name, version, is_dependency, flags)
   if dotinfos and not flags.force then
     -- If the package is not a dependency, it does not need to be changed.
     if not dotinfos.is_dependency and not is_dependency then
-      log.warn "Installation skipped as the package is already installed."
+      log.arrow "Installation skipped as the package is already installed."
       -- log.warn "The package is already installed. Use `--force` to reinstall it."
       return
     end
@@ -37,10 +44,19 @@ local function _install(name, version, is_dependency, flags)
     -- the package will be marked as non-dependency.
     if dotinfos.is_dependency and not is_dependency then
       lpkg.gen_dotinfos_file(dotinfos, { is_dependency = false })
-      log.warn(("%s has been updated, %s has been added to list of packages."):format(PKGER_DOT_INFOS, c.green(name)))
+      log.arrow(("%s has been updated, %s has been added to list of packages."):format(PKGER_DOT_INFOS, c.green(name)))
       return
     end
 
+    -- false and false ok
+
+    -- true and false ok
+
+    -- false and true
+
+    -- true and true
+
+    log.arrow "The dependency is already installed."
     return
   end
 
@@ -66,13 +82,24 @@ function M.load_pkg(pkg, is_dependency, flags)
 
   local depends = lpkg.parse(pkg.depends or {})
 
-  log.info "Checking for dependencies...."
-  for name, version in pairs(depends) do
-    local has = lpkg.has_package(name, version)
+  if pkg.depends then
+    local str = table.concat(pkg.depends, ", ")
+    log.arrow("Dependencies: " .. str, "green")
+  end
 
-    if not has then
-      _install(name, version, true, {})
+  for name, version in pairs(depends) do
+    local infos = lpkg.get_current_pkg(name)
+
+    if infos and version ~= PKGER_SCRIPT_VERSION then
+      if infos.version == version then
+        log.arrow "The dependency is already installed."
+        goto continue
+      end
     end
+
+    _install(name, version, true, {})
+
+    ::continue::
   end
 
   if not fs.is_dir(dir) and not fs.mkdir(dir) then
