@@ -257,7 +257,7 @@ function M.gen_dotinfos_file(pkg, flags)
 
   local dir = pkg.pkgdir
   local file = fs.join(PKGER_PKGS, pkg.name, pkg.version, PKGER_DOT_INFOS)
-  local bin_name = M.bin_name_parser(pkg.bin) or pkg.bin_name
+  local bin_name = pkg.bin_name
 
   if not bin_name then
     pkg.is_libary = true
@@ -295,7 +295,7 @@ function M.gen_dotpkg_file(pkg, flags)
 
   local dir = pkg.pkgdir
   local file = fs.join(PKGER_PKGS, pkg.name, PKGER_DOT_PKG)
-  local bin_name = M.bin_name_parser(pkg.bin)
+  local bin_name = pkg.bin_name
 
   if not bin_name then
     pkg.is_libary = true
@@ -360,8 +360,32 @@ function M.run_pkg(pkg)
     ::continue::
   end
 
-  if not pkg.bin_name then
-    pkg.bin_name = M.get_bin_name(pkg)
+  if pkg.bin then
+    pkg.bin_name = M.bin_name_parser(pkg.bin)
+    pkg.bin_path = fs.join(pkg.pkgdir, pkg.bin)
+  elseif not pkg.bin_name then
+    local dir = fs.join(pkg.pkgdir, "bin")
+
+    if fs.is_dir(dir) then
+      local dirs = fs._list_all(dir)
+
+      if #dirs == 1 then
+        local i = next(dirs)
+        local bin_name = fs.join(pkg.pkgdir, dirs[i])
+
+        if fs.attributes(bin_name, "mode") == "file" then
+          pkg.bin_name = M.bin_name_parser(bin_name)
+          pkg.bin_path = bin_name
+        end
+      end
+
+      local file = fs.join(pkg.pkgdir, "bin", pkg.name)
+
+      if fs.is_file(file) then
+        pkg.bin_name = pkg.name
+        pkg.bin_path = file
+      end
+    end
   end
 
   return pkg
@@ -462,7 +486,7 @@ function M.create_links(pkg)
   local dir = pkg.pkgdir
 
   if pkg.bin_name then
-    local bin_path = fs.join(dir, pkg.bin)
+    local bin_path = fs.join(dir, pkg.bin_path)
     local dest_path = fs.join(PKGER_BIN, pkg.bin_name)
 
     local ok, msg = fs.link(bin_path, dest_path, true)
