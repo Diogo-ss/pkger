@@ -94,12 +94,14 @@ function M.load_script(script)
   local etc = fs.join(dir, (pkg.etc or "etc"))
   local share = fs.join(dir, (pkg.share or "share"))
   local include = fs.join(dir, (pkg.include or "include"))
+  local lib = fs.join(dir, (pkg.lib or "lib"))
 
   -- script
   pkg.pkgdir = dir
   pkg.pkgetc = etc
   pkg.pkgshare = share
   pkg.pkginclude = include
+  pkg.pkglib = lib
 
   return pkg
 end
@@ -555,8 +557,19 @@ function M.prefix(name, version)
 end
 
 -- todo add @ suporte
-function M.pkg(name)
-  local infos = M.get_current_pkg(name)
+function M.pkg(n)
+  local infos = {}
+
+  local pkg = M.parse { n }
+
+  local name = next(pkg)
+  local version = pkg[name]
+
+  if version == PKGER_SCRIPT_VERSION then
+    infos = M.get_current_pkg(name)
+  else
+    infos = M.get_pkg_infos(name, version)
+  end
 
   if not infos then
     return {}
@@ -568,6 +581,7 @@ function M.pkg(name)
     is_libary = infos.is_libary,
     version = infos.version,
     pkgdir = infos.pkgdir,
+    file = infos.file,
     -- pkgetc = infos.pkgetc,
     -- pkgshare = infos.pkgshare,
     -- pkginclude = infos.pkginclude,
