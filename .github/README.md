@@ -4,13 +4,16 @@ A simple and lightweight package manager written in Lua (currently only for Linu
 
 The purpose of this package manager is to allow packages to be distributed in Lua scripts in a simple way, allowing binaries to be distributed or compiled directly from source code.
 
+⚠️ Warning
+PKGER is still in development and not yet secure for production use. It is highly recommended to test it in a container rather than on your main machine.
+
 # Features
 
-- It uses url patterns to obtain packages, thus allowing the use of an api and raw files in the repositories.
-- Supports search (API and GitHub by default).
-- Maintain different versions of a single package.
+- Uses URL patterns to obtain packages, allowing the use of an API and raw files in repositories.
+- Supports package search (API and GitHub by default).
+- Maintains different versions of a single package.
 - No sudo needed.
-- Self-hosting of repositories made simple, see: TODO
+- Simplified self-hosting of repositories (documentation pending).
 
 ## TODO
 
