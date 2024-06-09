@@ -53,6 +53,8 @@ cd pkger
 
 luarocks make --only-deps --lua-version=5.4 --local
 
+eval "$(luarocks path --bin)"
+
 lua src/main.lua --help
 ```
 
