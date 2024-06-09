@@ -39,13 +39,15 @@ Download the latest version at: [latest](https://github.com/Diogo-ss/pkger/relea
 
 </details>
 
-<details> <summary>Script</summary>
+<details> <summary>Lua script</summary>
 You can use the package manager without compiling.
 
 ### dependencies
 
-- [Luarocks](https://github.com/luarocks/luarocks/wiki/Download)
+- Git
+- base-devel
 - [Lua 5.4](https://www.lua.org/download.html)
+- [Luarocks](https://github.com/luarocks/luarocks/wiki/Download)
 
 ```sh
 git clone https://github.com/Diogo-ss/pkger.git
@@ -59,6 +61,32 @@ lua src/main.lua --help
 ```
 
 </details>
+
+## build
+
+### dependencies
+
+- Git
+- base-devel
+- [Luarocks](https://github.com/luarocks/luarocks/wiki/Download)
+- [Lua 5.4](https://www.lua.org/download.html)
+- [luastatic](https://github.com/ers35/luastatic)
+
+```sh
+git clone https://github.com/Diogo-ss/pkger.git
+
+cd pkger
+
+luarocks make --only-deps --lua-version=5.4 --local
+
+eval "$(luarocks path --bin)"
+
+luarocks install luastatic
+
+make
+
+./bin/pkger --help
+```
 
 ## PKG
 
@@ -76,30 +104,12 @@ url = "https://github.com/neovim/neovim/releases/download/v${{ version }}/nvim-l
 bin = "bin/nvim"
 
 checkver = {
-	url = "https://api.github.com/repos/neovim/neovim/releases/latest",
-	jsonpath = "tag_name",
-	regex = "[Vv]?(.+)",
+ url = "https://api.github.com/repos/neovim/neovim/releases/latest",
+ jsonpath = "tag_name",
+ regex = "[Vv]?(.+)",
 }
 
 function install()
-	system("mv * ..")
+ system("mv * ..")
 end
-```
-
-
-## build
-
-### dependencies
-
-- [Luarocks](https://github.com/luarocks/luarocks/wiki/Download)
-- [Lua 5.4](https://www.lua.org/download.html)
-
-```sh
-git clone https://github.com/Diogo-ss/pkger.git
-cd pkger
-
-luarocks make --only-deps --lua-version=5.4 --local
-luarocks install luastatic
-
-sh scripts/build.sh
 ```
