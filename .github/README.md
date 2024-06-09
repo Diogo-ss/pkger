@@ -7,6 +7,8 @@ The purpose of this package manager is to allow packages to be distributed in Lu
 ⚠️ Warning
 PKGER is still in development and not yet secure for production use. It is highly recommended to test it in a container rather than on your main machine.
 
+some packages: [core-pkgs](https://github.com/pkger/core-pkgs.git) (Linux)
+
 # Features
 
 - Uses URL patterns to obtain packages, allowing the use of an API and raw files in repositories.
